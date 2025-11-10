@@ -1,0 +1,33 @@
+{
+  "name": "gluenews",
+  "version": "1.0.0",
+  "description": "Projekt aplikacji webowej na konkurs HackHeroes.",
+  "main": "app.ts",
+  "scripts": {
+    "start": "npx tsx ./src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Glueeeeed/GlueNews.git"
+  },
+  "author": "Glueeed",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Glueeeeed/GlueNews/issues"
+  },
+  "homepage": "https://github.com/Glueeeeed/GlueNews.git/#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "mysql2": "^3.15.3",
+    "path": "^0.12.7",
+    "tsx": "^4.20.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5"
+  }
+}
