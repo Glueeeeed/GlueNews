@@ -40,10 +40,12 @@ if (corsEnabled) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req: Request, res: Response)  => {
-    res.sendFile(path.join(__dirname, 'public', '/views' ,'test.html'));
+    res.sendFile(path.join(__dirname, 'public', '/views' ,'index.html'));
 })
 
 // API endpoints
+
+
 
 
 

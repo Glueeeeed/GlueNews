@@ -4,7 +4,8 @@
   "description": "Projekt aplikacji webowej na konkurs HackHeroes.",
   "main": "app.ts",
   "scripts": {
-    "start": "npx tsx ./src/app.ts"
+    "start": "npx tsx ./src/app.ts",
+    "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./src/public/css/styles.css --watch --minify"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/Glueeeeed/GlueNews.git/#readme",
   "dependencies": {
+    "@tailwindcss/cli": "^4.1.17",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -24,6 +26,7 @@
     "https": "^1.0.0",
     "mysql2": "^3.15.3",
     "path": "^0.12.7",
+    "tailwindcss": "^4.1.17",
     "tsx": "^4.20.6"
   },
   "devDependencies": {
