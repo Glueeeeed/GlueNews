@@ -18,11 +18,13 @@
   },
   "homepage": "https://github.com/Glueeeeed/GlueNews.git/#readme",
   "dependencies": {
+    "@google/genai": "^1.29.0",
     "@tailwindcss/cli": "^4.1.17",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "groq-sdk": "^0.34.0",
     "https": "^1.0.0",
     "mysql2": "^3.15.3",
     "path": "^0.12.7",

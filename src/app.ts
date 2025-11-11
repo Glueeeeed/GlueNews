@@ -11,6 +11,7 @@ import {corsEnabled, httpsMode, PORT, domain} from "./configs/settings";
 
 // Import Routes
 
+import analyse from './routes/analyse';
 
 
 const app = express();
@@ -45,6 +46,7 @@ app.get('/', (req: Request, res: Response)  => {
 
 // API endpoints
 
+app.use('/api', analyse);
 
 
 
