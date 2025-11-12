@@ -4,7 +4,8 @@ analizaBtn.addEventListener('click', () => {
 })
 
 async function analiza() {
-    let text = document.getElementById('inputText').value;
+    const text = document.getElementById('inputText').value;
+    await waitInput();
     try {
         const analiza = await fetch(`http://localhost:2137/api/analiza`, {
             method: 'POST',
@@ -19,9 +20,17 @@ async function analiza() {
             const errorData = await analiza.json();
             throw new Error(errorData.error);
         }
+        const analizaData = await analiza.json();
+        window.location.href = `http://localhost:2137/api/results/${analizaData.result}`;
+
 
     } catch (error) {
          console.log("Wystapil blad: ", error);
          document.getElementById('inputText').value = 'Wystapil blad podczas analizy tego tekstu. Sprobuj ponownie.';
     }
+}
+
+async function waitInput() {
+    const text = document.getElementById('inputText').value;
+    document.getElementById('inputText').value = 'Analizowanie prosze czekac...';
 }

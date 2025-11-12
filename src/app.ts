@@ -33,6 +33,8 @@ if (corsEnabled) {
     };
     app.use(cors());
 }
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../src/public/', 'views'));
 
 
 

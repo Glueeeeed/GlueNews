@@ -22,6 +22,7 @@
     "@tailwindcss/cli": "^4.1.17",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "groq-sdk": "^0.34.0",

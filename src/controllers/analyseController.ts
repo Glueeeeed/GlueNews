@@ -1,11 +1,19 @@
 import {Request, Response} from "express";
-import { getAnalysisResult } from '../utils/analyseService';
+import {generateSession, getAnalysisResult, getDataResults} from '../services/analyseService';
 
 interface InputData {
     input: string;
 }
 
 interface OutputData {
+    result: string;
+}
+
+interface getResultData {
+    sessionID: string;
+}
+
+interface outputResultData {
     result: object;
 }
 
@@ -18,7 +26,9 @@ interface OutputData {
         }
 
         const result : object =  await getAnalysisResult(input, process.env.GEMINI_API_KEY, 'gemini-2.5-flash');
-        console.log(result);
+        const id : string = await generateSession(result, input);
+        console.log('Analysis session created with ID:', id);
+        res.status(200).json({result: id});
 
 
     } catch (error: any) {
@@ -27,7 +37,9 @@ interface OutputData {
             try {
                 const input = req.body.input;
                 const result: object = await getAnalysisResult(input, process.env.GEMINI_API_KEY, 'gemini-2.5-flash-lite');
-                console.log(result);
+                const id : string = await generateSession(result, input);
+                console.log('Analysis session created with ID:', id);
+                res.status(200).json({result: id});
             } catch (innerError) {
                 console.error(innerError);
                 res.status(500).json({ error: 'Internal Server Error' });
@@ -35,6 +47,24 @@ interface OutputData {
         } else {
             console.error(error);
             res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+}
+
+export const getResults =  async (req: Request<getResultData, {}, {}, {}>, res: Response<outputResultData | { error: string }>) : Promise<any> => {
+    const sessionID = req.params.sessionID;
+    try {
+        const result : object = await getDataResults(sessionID);
+        res.render('results', { data: result });
+    } catch (error: any) {
+        if (error.message.includes('Session not found')) {
+            res.status(404).json({ error: 'Session not found' });
+            return;
+        } else {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
         }
     }
 
