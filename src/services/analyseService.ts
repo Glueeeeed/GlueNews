@@ -32,7 +32,7 @@ export async function getAnalysisResult(input: string, key: any , model: string)
                 '1. Wczytaj treść z linku (jeśli 404 → verdict: "Błąd linku") lub zapoznaj sie z treścią tematu.,\n' +
                 '2. Wyodrębnij 3 kluczowe twierdzenia.,\n' +
                 '3. Dla każdego: sprawdź via web search, podaj cytację w tekście.,\n' +
-                '4. Oceń wiarygodność źródła (WHOIS, Media Bias Chart).,\n' +
+                '4. Oceń wiarygodność źródła (WHOIS, Media Bias Chart). Szukaj zrodel NIE STARSZYCH niz 6 miesiecy,\n' +
                 '5. Daj score 0-100 i verdict.,\n' +
                 '6. Analizuj czy zrodla działają (nie są martwe).,\n' +
                 '\n' +

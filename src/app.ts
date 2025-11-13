@@ -46,6 +46,10 @@ app.get('/', (req: Request, res: Response)  => {
     res.sendFile(path.join(__dirname, 'public', '/views' ,'index.html'));
 })
 
+app.get('/register', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, 'public', '/views' ,'register.html'));
+})
+
 // API endpoints
 
 app.use('/api', analyse);

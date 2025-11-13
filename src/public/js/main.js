@@ -18,6 +18,7 @@ async function analiza() {
         });
         if (!analiza.ok) {
             const errorData = await analiza.json();
+            document.getElementById('inputText').value = 'Wystapil blad podczas analizy tego tekstu. Sprobuj ponownie.';
             throw new Error(errorData.error);
         }
         const analizaData = await analiza.json();
@@ -26,7 +27,6 @@ async function analiza() {
 
     } catch (error) {
          console.log("Wystapil blad: ", error);
-         document.getElementById('inputText').value = 'Wystapil blad podczas analizy tego tekstu. Sprobuj ponownie.';
     }
 }
 
