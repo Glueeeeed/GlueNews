@@ -10,7 +10,9 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "NodeNext",
     "sourceMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

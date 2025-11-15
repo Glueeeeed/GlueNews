@@ -2,16 +2,20 @@ import express, { Request, Response } from 'express';
 import path from "path";
 import cors from 'cors';
 import https from 'https';
+import { fileURLToPath } from 'node:url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 //Uncomment when httpsMode is enabled
 // import {options} from "./config/ssl";
 
-import {corsEnabled, httpsMode, PORT, domain} from "./configs/settings";
+import {corsEnabled, httpsMode, PORT, domain} from "./configs/settings.ts";
 
 // Import Routes
 
-import analyse from './routes/analyse';
+import analyse from './routes/analyse.ts';
+import keyExchange from './routes/keyExchange.ts';
+
 
 
 const app = express();
@@ -53,6 +57,7 @@ app.get('/register', (req: Request, res: Response) => {
 // API endpoints
 
 app.use('/api', analyse);
+app.use('/api', keyExchange);
 
 
 

@@ -1,6 +1,7 @@
 {
   "name": "gluenews",
   "version": "1.0.0",
+  "type": "module",
   "description": "Projekt aplikacji webowej na konkurs HackHeroes.",
   "main": "app.ts",
   "scripts": {
@@ -19,7 +20,12 @@
   "homepage": "https://github.com/Glueeeeed/GlueNews.git/#readme",
   "dependencies": {
     "@google/genai": "^1.29.0",
+    "@noble/ciphers": "^2.0.1",
+    "@noble/curves": "^2.0.1",
+    "@noble/ed25519": "^3.0.0",
+    "@noble/hashes": "^2.0.1",
     "@tailwindcss/cli": "^4.1.17",
+    "@types/noble": "^0.0.44",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",

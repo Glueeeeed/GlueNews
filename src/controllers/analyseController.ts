@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {generateSession, getAnalysisResult, getDataResults} from '../services/analyseService';
+import {generateSession, getAnalysisResult, getDataResults} from '../services/analyseService.ts';
 
 interface InputData {
     input: string;

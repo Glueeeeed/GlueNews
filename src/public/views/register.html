@@ -15,6 +15,12 @@
           integrity="sha512-kJlvECunwXftkPwyvHbclArO8wszgBGisiLeuDFwNM8ws+wKIw0sv1os3ClWZOcrEB2eRXULYUsm8OVRGJKwGA=="
           referrerpolicy="no-referrer" rel="stylesheet"/>
     <link href="../css/styles.css" rel="stylesheet">
+    <script type="module" src="../js/register.js"></script>
+    <script type="module" src="../js/register.js"></script>
+    <script type="module">
+        import * as noblecurves from 'https://cdn.jsdelivr.net/npm/@noble/curves@2.0.1/+esm';
+        window.noblecurves = noblecurves;
+    </script>
 </head>
 <body class="bg-white">
 <nav class="fixed w-full top-0 z-10 text-amber-50 navbar ">
@@ -24,43 +30,41 @@
 </nav>
 <main class="mt-32">
     <section>
-        <div class="flex flex-col items-center justify-center mt-20 ">
+        <div class="flex flex-col items-center justify-center mt-[10%]">
             <div class="items-center font-['Segoe UI', Tahoma, Geneva, Verdana, sans-serif'] font-medium flex-row w-100 max-lg:w-[75%] max-md:w-[90%] max-sm:w-[90%] box shadow-sm rounded-lg border border-gray-200 p-3">
                 <h1 class=" mt-[10%] text-center text-[#3a372e] font-bold text-2xl"> Zarejestruj sie</h1>
                 <p class=" mt-2 text-center text-black opacity-60">Aby skorzystac z trybu walki</p>
                 <div class="relative w-full p-3">
-                    <label for="email"></label><input class=" mt-[2.5%] ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" id="email" placeholder="Email"
-                                                      type="text"/>
+                    <label for="emailInput"></label><input
+                        class=" mt-[2.5%] ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        id="emailInput" placeholder="Email"
+                        type="text"/>
                     <i class="fa-solid fa-envelope input-icon absolute pl-7 pb-2  top-1/2  mt-2 -translate-y-1/2 text-gray-400"></i>
                 </div>
 
                 <div class="relative w-full p-3">
-                    <label for="username"></label><input class="ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" id="username" placeholder="Nazwa użytkownika" type="text"/>
+                    <label for="usernameInput"></label><input
+                        class="ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        id="usernameInput" placeholder="Nazwa użytkownika" type="text"/>
                     <i class="fa-solid fa-user input-icon absolute pl-7 pb-2  mt-1 top-1/2  -translate-y-1/2 text-gray-400"></i>
                 </div>
                 <div class="relative w-full p-3">
-                    <label for="password"></label><input class="ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" id="password" placeholder="********" type="password"/>
+                    <label for="passwordInput"></label><input
+                        class="ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        id="passwordInput" placeholder="********" type="password"/>
                     <i class="fa-solid fa-lock input-icon absolute pl-7 pb-2  mt-1 top-1/2  -translate-y-1/2 text-gray-400"></i>
                     <div class="flex flex-col items-baseline-last  ">
                         <button class="absolute  mt-5 mr-[5%] top-1/6 -translate-y-1/2 text-gray-400 hover:text-violet-400 focus:outline-none"
-                                id="togglePassword" onclick="showPass()" >
+                                id="togglePassword" onclick="showPass()">
                             <i class="fa-solid fa-eye" id="eye"></i>
                         </button>
                     </div>
                 </div>
-                <div class="text-center password-requirements ">
-                    <ul class="flex flex-col ml-8 mr-4 mt-5  items-start gap-0.5 text-xs max-lg:text-2xs max-md:text-2xs  ">
-                        <li class=" font-color opacity-70 passinvalid" id="characters">Hasło musi mieć co najmniej 8 znaków
-                        </li>
-                        <li class=" font-color  opacity-70 passinvalid" id="lowercase">Hasło musi zawierać małe litery
-                        </li>
-                        <li class=" font-color opacity-70  passinvalid" id="uppercase">Hasło musi zawierać duże litery
-                        </li>
-                        <li class=" font-color opacity-70 passinvalid" id="numbers">Hasło musi zawierać cyfry
-                        </li>
-                        <li class=" opacity-70 font-color passinvalid" id="special">Hasło musi zawierać znaki specjalne
-                        </li>
-                    </ul>
+                <div class="w-full flex justify-center p-3">
+                    <button class="mx-auto px-10 py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
+                            id="registerBtn">
+                        Zarejestruj sie
+                    </button>
                 </div>
             </div>
         </div>
@@ -85,7 +89,5 @@
         </div>
     </div>
 </footer>
-
-<script src="../js/main.js"></script>
 </body>
 </html>

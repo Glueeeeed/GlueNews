@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import crypto from 'crypto';
-import db from "../configs/database";
+import db from "../configs/database.ts";
 dotenv.config({ path: './src/configs/secrets.env' })
 
 // Remove code fences like ```json and ``` and trim
