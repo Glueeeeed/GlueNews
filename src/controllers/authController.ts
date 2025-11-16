@@ -1,9 +1,9 @@
 import {Request, Response} from 'express';
 import db from "../configs/database.ts";
-import {createVerificationMail, decryptData, hashArgon, validate} from "../services/authService.ts";
+import {createVerificationMail, decryptData, hashArgon, validate, getUserHash, verifyHashArgon} from "../services/authService.ts";
 import {Secrets} from "./keyExchangeController.ts";
 import crypto from 'crypto';
-import {ValidationError, ConflictError} from "../utils/error.ts";
+import {ValidationError, ConflictError, AuthenticationError} from "../utils/error.ts";
 import jsonwebtoken, {JwtPayload} from 'jsonwebtoken';
 import dotenv from "dotenv";
 import {sendVerificationMail} from "../services/mailService.ts";
@@ -14,6 +14,12 @@ interface registerRequest {
     login: string;
     password: string;
     username: string;
+    sessionID: string;
+}
+
+interface loginRequest {
+    login: string;
+    password: string;
     sessionID: string;
 }
 
@@ -67,6 +73,62 @@ export const register = async (req: Request<{}, {}, registerRequest>, res: Respo
 
 
 }
+
+export const login = async (req: Request<{}, {}, loginRequest>, res: Response<registerResponse | { error: string }>): Promise<void>=> {
+    try {
+        const loginEncrypted : string = req.body.login;
+        const passwordEncrypted : string  = req.body.password;
+        const sessionID : string = req.body.sessionID;
+
+
+        const sessionKey : string | undefined = Secrets.get(sessionID);
+
+        if (!loginEncrypted || !passwordEncrypted || !sessionID) {
+            res.status(400).json({ error: 'Invalid input' });
+            return;
+        }
+
+        const login : string = decryptData(loginEncrypted, sessionKey);
+
+        await validate(login,passwordEncrypted, null, sessionKey);
+        const authData = await getUserHash(passwordEncrypted, login);
+        await verifyHashArgon(authData.hashedPass, decryptData(passwordEncrypted, sessionKey));
+        const uuid = authData.uuid;
+
+        const token = jsonwebtoken.sign(
+            {uuid},
+            secret,
+            {expiresIn: '1h'}
+
+        );
+
+        res.cookie('token', token, {
+            maxAge: 60 * 60 * 1000,
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            path: '/'
+        });
+
+        console.log('Auth cookie generated successfully.');
+
+        res.status(200).json({message: 'ok'})
+
+
+
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            res.status(400).json({ error: error.message });
+        } else if (error instanceof AuthenticationError) {
+            res.status(401).json({ error: error.message });
+        } else {
+            console.error('Login error:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+}
+
+
 
 export const verify = async (req: Request<{}, {}, {}, verifyQuery>, res: Response) : Promise<void> => {
    const token: string = req.query.token;

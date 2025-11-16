@@ -4,25 +4,23 @@ import {randomBytes} from 'https://cdn.jsdelivr.net/npm/@noble/ciphers@2.0.1/uti
 
 
 
-const registerBtn = document.getElementById('registerBtn');
+const registerBtn = document.getElementById('loginBtn');
 registerBtn.addEventListener('click', () => {
-     register();
+    login();
 });
 
-async function register() {
-    const username = document.getElementById('usernameInput').value;
+async function login() {
     const email = document.getElementById('emailInput').value;
     const password = document.getElementById('passwordInput').value;
     const sessionKey = await getSessionKey();
     const sessionID = sessionKey.sessionID
     const sessionSecret = sessionKey.secret
 
-    const encryptedUsername = await encryptAesGcm(username, sessionSecret);
     const encryptedEmail = await encryptAesGcm(email, sessionSecret);
     const encryptedPassword = await encryptAesGcm(password, sessionSecret);
 
     try {
-        const register = await fetch(`http://localhost:2137/api/auth/register`, {
+        const login = await fetch(`http://localhost:2137/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -30,21 +28,20 @@ async function register() {
             body: JSON.stringify({
                 login: encryptedEmail,
                 password: encryptedPassword,
-                username: encryptedUsername,
                 sessionID: sessionID
 
             })
         });
-        if (!register.ok) {
-            const errorData = await register.json();
+        if (!login.ok) {
+            const errorData = await login.json();
             throw new Error(errorData.error);
         }
-        const registerData = await register.json();
-        console.log("Rejestracja powiodla sie: ", registerData.message);
+        const loginData = await login.json();
+        console.log("Logowanie powiodlo sie: ", loginData.message);
 
 
     } catch (error) {
-        console.log('Rejestracja nie powiodla sie: ', error.message);
+        console.log('Logowanie nie powiodlo sie: ', error.message);
         alert(error.message);
     }
 
@@ -59,6 +56,7 @@ async function encryptAesGcm(plainText, keyHex) {
     const uint8Array = new Uint8Array(cipher);
     return uint8Array.toBase64() + ":" + nonce.toHex()
 }
+
 
 async function getSessionKey() {
     try {

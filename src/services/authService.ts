@@ -28,19 +28,17 @@ export function decryptData(cipherTextBase64 : string, keyHex : any) : string {
 }
 
 export async function hashArgon(password: string): Promise<string> {
-    const hashBuffer = await argon2.hash(password, {
+    const hashBuffer : any = await argon2.hash(password, {
         type: argon2.argon2id,
         memoryCost: 65536,
-        timeCost: 3,
+        timeCost: 4,
         parallelism: 4,
-        hashLength: 16,
-        saltLength: 16,
-        raw: false
+        hashLength: 32,
     });
     return (hashBuffer as Buffer).toString('hex');
 }
 
-export async function veryfyHashArgon(hash : string, password : string): Promise<void> {
+export async function verifyHashArgon(hash : string, password : string): Promise<void> {
     const passwordMatch = await argon2.verify(hash, password);
     if (!passwordMatch) {
         throw new AuthenticationError('Invalid email or password');
@@ -58,33 +56,53 @@ export async function createVerificationMail(uuid: string, email: string) : Prom
     console.log('Verification email sent');
 }
 
-export async function validate(login: string, password : string, username: string, secret : any) : Promise<void> {
+export async function validate(login: string, password : string, username: any, secret : any) : Promise<void> {
+
         if (validator.isEmpty(login)) {
             throw new ValidationError('Adres email nie moze byc pusty');
         } else if (!validator.isEmail(login)) {
             throw new ValidationError('Niepoprawny adres email');
-        } else if (validator.isEmpty(username)) {
-            throw new ValidationError('Nazwa uzytkownika nie moze byc pusta');
-        } else if (!validator.isLength(username, {min: 4, max: 25})) {
-            throw new ValidationError('Nazwa uzytkownika powinna miec dlugosc miedzy 4 a 25 znakow')
-        }  else if (validator.isEmpty(decryptData(password,secret))) {
+        }  else if (validator.isEmpty(decryptData(password,secret)) ) {
             throw new ValidationError('Haslo nie moze byc puste');
         } else if (!validator.isStrongPassword(decryptData(password,secret))) {
             throw new ValidationError('Haslo powinno skladac sie z minimum 8 znakow, conajmniej jednej wielkiej i malej litery oraz  conajmniej jednego znaku specjalnego')
         }
 
+        if (username != null) {
+        if (validator.isEmpty(username)) {
+            throw new ValidationError('Nazwa uzytkownika nie moze byc pusta');
+        }
+        if (!validator.isLength(username, { min: 4, max: 25 })) {
+            throw new ValidationError('Nazwa uzytkownika powinna miec dlugosc miedzy 4 a 25 znakow');
+        }
+    }
+
+
+    if (username != null) {
+        const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [login]);
+        if ((users as any[]).length > 0) {
+            throw new ConflictError('Ten adres email jest juz zarejestrowany')
+        }
+
+        const [usernames] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+        if ((usernames as any[]).length > 0) {
+            throw new ConflictError('Nazwa uzytkownika jest juz zajeta')
+        }
+    } else {
+        const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [login]);
+        if ((users as any[]).length <= 0) {
+            throw new ValidationError('Nie znaleziono konta powiazanego z tym adresem email')
+        }
+    }
+
+}
+
+export async function getUserHash(password : string, login : string)  {
     const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [login]);
-    if ((users as any[]).length > 0) {
-        throw new ConflictError('Ten adres email jest juz zarejestrowany')
-    }
-
-    const [usernames] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
-    if ((usernames as any[]).length > 0) {
-        throw new ConflictError('Nazwa uzytkownika jest juz zajeta')
-    }
-
-
-
+    const data : any = (users as any[])[0];
+    const userHashedPassword = data.password;
+    const userUuid = data.uuid;
+    return {hashedPass: userHashedPassword, uuid: userUuid};
 }
 
 
