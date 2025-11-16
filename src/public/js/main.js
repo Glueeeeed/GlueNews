@@ -7,7 +7,7 @@ async function analiza() {
     const text = document.getElementById('inputText').value;
     await waitInput();
     try {
-        const analiza = await fetch(`http://localhost:2137/api/analiza`, {
+        const analiza = await fetch(`http://localhost:2137/api/analiza`, { // CHANGE TO YOUR DOMAIN
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -22,7 +22,7 @@ async function analiza() {
             throw new Error(errorData.error);
         }
         const analizaData = await analiza.json();
-        window.location.href = `http://localhost:2137/api/results/${analizaData.result}`;
+        window.location.href = `http://localhost:2137/api/results/${analizaData.result}`; // CHANGE TO YOUR DOMAIN
 
 
     } catch (error) {

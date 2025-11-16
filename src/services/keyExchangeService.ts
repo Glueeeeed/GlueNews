@@ -40,3 +40,7 @@ export const deleteSecret = (sessionID: string) : void => {
         console.log(error);
     }
 }
+
+
+
+console.log()

@@ -15,6 +15,7 @@ import {corsEnabled, httpsMode, PORT, domain} from "./configs/settings.ts";
 
 import analyse from './routes/analyse.ts';
 import keyExchange from './routes/keyExchange.ts';
+import auth from './routes/auth.ts';
 
 
 
@@ -58,6 +59,7 @@ app.get('/register', (req: Request, res: Response) => {
 
 app.use('/api', analyse);
 app.use('/api', keyExchange);
+app.use('/api/auth/', auth)
 
 
 
