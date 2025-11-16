@@ -31,6 +31,10 @@ interface verifyQuery {
     token: string;
 }
 
+interface statusResponse {
+    status: string
+}
+
 export const register = async (req: Request<{}, {}, registerRequest>, res: Response<registerResponse | { error: string }>): Promise<void> => {
     try {
         const loginEncrypted : string = req.body.login;
@@ -145,6 +149,13 @@ export const verify = async (req: Request<{}, {}, {}, verifyQuery>, res: Respons
        console.error(err);
        res.status(500).send('verify token expired or invalid');
    }
+}
 
-
+export const status = async (req: Request<{}, {}, {}, {}>, res: Response<statusResponse | { error: string }>) : Promise<void> => {
+    const auth = (req as any).auth;
+    if (auth?.isAuthenticated) {
+        res.status(200).json({status: 'authorized'})
+    } else {
+        res.status(200).json({status: 'unauthorized'})
+    }
 }

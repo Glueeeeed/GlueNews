@@ -17,8 +17,15 @@ interface outputResultData {
     result: object;
 }
 
- export  const  analyse = async (req: Request<{}, {}, InputData>, res: Response<OutputData | { error: string }>): Promise<void> => {
+ export  const  analyse = async (req: Request<{}, {}, InputData>, res: Response<OutputData | { error: string }>): Promise<any> => {
     try {
+
+        const auth = (req as any).auth;
+        if (!auth?.isAuthenticated) {
+            console.log(auth?.isAuthenticated)
+            console.log(auth?.reason);
+             return res.status(400).json({ error: "Autoryzacja wymagana" });
+        }
         const input = req.body.input;
         if (!input) {
             res.status(400).json({ error: 'Invalid input' });

@@ -1,3 +1,7 @@
+ document.addEventListener('DOMContentLoaded',  async () => {
+   await checkStatus()
+})
+
 const analizaBtn = document.getElementById('analizujBtn');
 analizaBtn.addEventListener('click', () => {
  analiza();
@@ -33,4 +37,22 @@ async function analiza() {
 async function waitInput() {
     const text = document.getElementById('inputText').value;
     document.getElementById('inputText').value = 'Analizowanie prosze czekac...';
+}
+
+async function checkStatus(){
+    const status = await fetch(`http://localhost:2137/api/auth/status`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    const statusData = await status.json();
+
+    if (statusData.status === "unauthorized") {
+        document.getElementById('inputText').placeholder = "Aby moc wykonac analize musisz sie zalogowac!"
+        document.getElementById('inputText').disabled = true;
+        document.getElementById('analizujBtn').disabled = true;
+        document.getElementById('battleBtn').disabled = true;
+    }
+
 }

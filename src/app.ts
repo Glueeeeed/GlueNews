@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import path from "path";
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import https from 'https';
 import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import {softAuth} from "./middlewares/softAuth.ts";
 
 
 //Uncomment when httpsMode is enabled
@@ -21,6 +23,8 @@ import auth from './routes/auth.ts';
 
 const app = express();
 const port : number = PORT;
+app.use(cookieParser());
+app.use(softAuth);
 
 
 //Uncomment when httpsMode is enabled
