@@ -7,7 +7,7 @@ import {randomBytes} from "@noble/hashes/utils.js";
 import jsonwebtoken from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {sendVerificationMail} from "./mailService.ts";
-import {ValidationError, AuthenticationError, ConflictError} from "../utils/error.ts";
+import {ValidationError, AuthenticationError, ConflictError, BadRequestError} from "../utils/error.ts";
 dotenv.config({ path: './src/configs/secrets.env' });
 const secret : any = process.env.jwtSecret;
 
@@ -89,9 +89,14 @@ export async function validate(login: string, password : string, username: any, 
             throw new ConflictError('Nazwa uzytkownika jest juz zajeta')
         }
     } else {
+
         const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [login]);
         if ((users as any[]).length <= 0) {
             throw new ValidationError('Nie znaleziono konta powiazanego z tym adresem email')
+        }
+        const data : any = (users as any[])[0];
+        if (data.verified === 0 ) {
+            throw new BadRequestError('Aby sie zalogowac, wymagana jest weryfikacja adresu email')
         }
     }
 

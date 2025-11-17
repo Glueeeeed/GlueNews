@@ -41,6 +41,7 @@ async function register() {
         }
         const registerData = await register.json();
         console.log("Rejestracja powiodla sie: ", registerData.message);
+        window.location.href = '/login';
 
 
     } catch (error) {

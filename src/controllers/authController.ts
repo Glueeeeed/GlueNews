@@ -3,7 +3,7 @@ import db from "../configs/database.ts";
 import {createVerificationMail, decryptData, hashArgon, validate, getUserHash, verifyHashArgon} from "../services/authService.ts";
 import {Secrets} from "./keyExchangeController.ts";
 import crypto from 'crypto';
-import {ValidationError, ConflictError, AuthenticationError} from "../utils/error.ts";
+import {ValidationError, ConflictError, AuthenticationError, BadRequestError} from "../utils/error.ts";
 import jsonwebtoken, {JwtPayload} from 'jsonwebtoken';
 import dotenv from "dotenv";
 import {sendVerificationMail} from "../services/mailService.ts";
@@ -125,6 +125,8 @@ export const login = async (req: Request<{}, {}, loginRequest>, res: Response<re
             res.status(400).json({ error: error.message });
         } else if (error instanceof AuthenticationError) {
             res.status(401).json({ error: error.message });
+        } else if (error instanceof BadRequestError) {
+            res.status(400).json({ error: error.message });
         } else {
             console.error('Login error:', error);
             res.status(500).json({ error: 'Internal Server Error' });

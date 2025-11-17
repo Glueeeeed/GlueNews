@@ -7,6 +7,12 @@ analizaBtn.addEventListener('click', () => {
  analiza();
 })
 
+ const loginBtn = document.getElementById('loginBtn');
+
+ loginBtn.addEventListener('click', () => {
+     window.location.href = '/login';
+ })
+
 async function analiza() {
     const text = document.getElementById('inputText').value;
     await waitInput();
@@ -49,10 +55,12 @@ async function checkStatus(){
     const statusData = await status.json();
 
     if (statusData.status === "unauthorized") {
-        document.getElementById('inputText').placeholder = "Aby moc wykonac analize musisz sie zalogowac!"
+        document.getElementById('inputText').placeholder = "Aby móc wykonać analizę musisz się zalogować!"
         document.getElementById('inputText').disabled = true;
         document.getElementById('analizujBtn').disabled = true;
         document.getElementById('battleBtn').disabled = true;
+        document.getElementById('loginBtn').hidden = false;
     }
 
 }
+

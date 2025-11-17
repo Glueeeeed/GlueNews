@@ -38,6 +38,7 @@ async function login() {
         }
         const loginData = await login.json();
         console.log("Logowanie powiodlo sie: ", loginData.message);
+        window.location.href = '/';
 
 
     } catch (error) {

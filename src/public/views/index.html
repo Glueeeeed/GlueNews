@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" integrity="sha512-kJlvECunwXftkPwyvHbclArO8wszgBGisiLeuDFwNM8ws+wKIw0sv1os3ClWZOcrEB2eRXULYUsm8OVRGJKwGA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="../css/styles.css" rel="stylesheet">
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
 </head>
 <body class="bg-white">
 <nav class="fixed w-full top-0 z-10 text-amber-50 navbar ">
@@ -27,8 +30,11 @@
             <div class="items-center w-175 max-lg:w-[75%] max-md:w-[90%] max-sm:w-[90%] box shadow-sm rounded-lg border border-gray-200 p-3">
                 <textarea id="inputText" class=" mt-[2.5%] ml-[2.5%] mr-[3%] w-[95%] h-40 p-4 text-black  bg-gray-100  border border-gray-200  rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-400" placeholder="Wprowadź link lub tekst do analizy..."></textarea>
                 <div class="flex flex-row justify-center mt-4 gap-[3%] mb-4 ml-2 mr-4">
-                    <button id="analizujBtn" class=" px-30 max-lg:px-20 max-sm:px-15  py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg  transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px] ri-search-2-line max-sm:hidden"></i> Analizuj</button>
-                    <button id="battleBtn" class=" px-30 max-lg:px-20 max-sm:px-15 py-2   text-sm font-semibold text-violet-100 bg-gray-400 rounded-lg   transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px] ri-sword-line max-sm:hidden"></i> Battle</button>
+                    <button id="analizujBtn" class=" px-30 max-lg:px-20 max-sm:px-10  py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg  transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px] ri-search-2-line max-sm:hidden"></i> Analizuj</button>
+                    <button id="battleBtn" class=" px-30 max-lg:px-20 max-sm:px-10 py-2   text-sm font-semibold text-violet-100 bg-gray-400 rounded-lg   transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px] ri-sword-line max-sm:hidden"></i> Battle</button>
+                </div>
+                <div class="flex flex-row justify-center mt-4 gap-[3%] mb-4 ml-2 mr-4">
+                    <button id="loginBtn" hidden class=" px-20 max-lg:px-15 max-sm:px-10 py-2   text-sm font-semibold text-violet-100 bg-[#4a4841] rounded-lg   transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class="text-[14px] fa-solid fa-lock max-sm:hidden"></i>Zaloguj się</button>
                 </div>
             </div>
 
