@@ -10,19 +10,88 @@ interface getSessionResponse {
     sessionBattleID: string;
 }
 
-export const createBattleSession = async (req: Request<{}, {}, getSessionRequest>, res: Response<getSessionResponse | {error: string}>) : Promise<any> => {
-    const input = req.body.data;
+interface createBattleRequest {
+    sessionID: string;
+}
+
+interface battleRoomParams {
+    sessionID: string;
+}
+
+interface battleRoomQuery {
+    user: string;
+}
+
+export const createBattleSession = async (req: Request<{}, {}, getSessionRequest>, res: Response<getSessionResponse | {error: string}>) : Promise<void> => {
+    const input : string = req.body.data;
     const auth = (req as any).auth;
     if (!auth?.isAuthenticated) {
-        return res.status(400).json({ error: "Autoryzacja wymagana" });
+         res.status(400).json({ error: "Autoryzacja wymagana" });
+         return;
     }
 
     const userID : any = auth?.userId;
-    const sessionID = crypto.randomBytes(8).toString('base64');
+    const sessionID : string = crypto.randomBytes(8).toString('base64url');
 
     await db.execute('INSERT INTO battle_sessions (sessionID, input, A_uuid, B_uuid) VALUES (?,?,?,?)', [sessionID, input, userID, null]);
-    res.status(201).json({sessionBattleID: sessionID})
 
-
+    res.redirect(`/api/battle/rooms/${sessionID}/?user=${userID}`);
 
 }
+
+export const battleRoom = async (req: Request<battleRoomParams, {}, {}, battleRoomQuery>, res: Response) : Promise<void> => {
+    const {sessionID} = req.params;
+    const {user} = req.query;
+    const auth = (req as any).auth;
+
+    const [sessionData] = await db.execute('SELECT * FROM battle_sessions WHERE sessionID = ?', [sessionID]);
+    const data : any = (sessionData as any[])[0];
+    if ((sessionData as any[]).length <= 0) {
+        res.status(404).send('Nie znaleziono sesji walki');
+        return;
+    }
+    const userID : any = auth?.userId;
+
+
+    const userData = {
+        role: '',
+        username: '',
+        uuid: '',
+    }
+
+    if (!user) {
+        userData.role = 'spectator';
+        userData.username = 'Spectator' + Math.floor(Math.random() * 9999);
+        userData.uuid = userID || null;
+    } else {
+        const [userInfo] = await db.execute('SELECT * FROM users WHERE uuid = ?', [user]);
+        const userDataInfo = (userInfo as any[])[0];
+
+
+        if (!auth?.isAuthenticated || user !== userID) {
+            res.status(403).send('Nieautoryzowany dostęp – zły użytkownik');
+            return;
+        }
+
+        if (data.A_uuid === user || data.B_uuid === user) {
+            userData.role = 'player';
+            userData.username = userDataInfo.username;
+            userData.uuid = user;
+        } else {
+            userData.role = 'spectator';
+            userData.username = userDataInfo.username;
+            userData.uuid = user;
+        }
+    }
+
+
+    res.render('battle', {
+        sessionID: sessionID,
+        user: userData,
+        sessionData: data,
+    })
+
+}
+
+
+

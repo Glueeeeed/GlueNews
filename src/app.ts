@@ -3,9 +3,11 @@ import path from "path";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import https from 'https';
+import http from 'http';
 import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import {softAuth} from "./middlewares/softAuth.ts";
+import {Server, Socket} from 'socket.io';
 
 
 //Uncomment when httpsMode is enabled
@@ -22,10 +24,26 @@ import battle from './routes/battle.ts';
 
 
 
+
+
 const app = express();
+const server = http.createServer(app);
 const port : number = PORT;
 app.use(cookieParser());
 app.use(softAuth);
+
+// Socket IO
+
+export const io = new Server(server, {
+    cors: corsEnabled
+        ? {
+            origin: domain,
+            credentials: true,
+        } : undefined,
+})
+
+
+
 
 
 //Uncomment when httpsMode is enabled
@@ -64,19 +82,17 @@ app.get('/login', (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, 'public', '/views' ,'login.html'));
 })
 
+app.get('/socket', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, 'public', '/views' ,'socket.html'));
+})
+
+
 // API endpoints
 
 app.use('/api', analyse);
 app.use('/api', keyExchange);
 app.use('/api/auth/', auth);
-app.use('/api/battle', battle )
-
-
-
-
-
-
-
+app.use('/api/battle/', battle )
 
 
 if (httpsMode) {
@@ -88,7 +104,7 @@ if (httpsMode) {
     // });
 
 } else {
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log(`App running at ${domain}:${port}`);
 
     });

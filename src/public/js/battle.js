@@ -20,13 +20,6 @@ async function createSession() {
             }),
         });
 
-        if (!getSession.ok) {
-            throw new Error('Failed to create battle');
-        }
-
-        const getSessionData = await getSession.json();
-        return getSessionData.battleSessionID;
-
     } catch (error) {
         console.log(error);
     }
