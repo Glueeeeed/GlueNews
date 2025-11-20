@@ -8,11 +8,9 @@ interface getSessionRequest {
 
 interface getSessionResponse {
     sessionBattleID: string;
+    uuid: string;
 }
 
-interface createBattleRequest {
-    sessionID: string;
-}
 
 interface battleRoomParams {
     sessionID: string;
@@ -34,8 +32,7 @@ export const createBattleSession = async (req: Request<{}, {}, getSessionRequest
     const sessionID : string = crypto.randomBytes(8).toString('base64url');
 
     await db.execute('INSERT INTO battle_sessions (sessionID, input, A_uuid, B_uuid) VALUES (?,?,?,?)', [sessionID, input, userID, null]);
-
-    res.redirect(`/api/battle/rooms/${sessionID}/?user=${userID}`);
+    res.status(200).json({ sessionBattleID: sessionID, uuid: userID });
 
 }
 
@@ -93,5 +90,38 @@ export const battleRoom = async (req: Request<battleRoomParams, {}, {}, battleRo
 
 }
 
+export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {},{}>,res: Response) : Promise<void> => {
+    const {sessionID} = req.params;
+    const auth = (req as any).auth;
+    const userID : any = auth?.userId;
+    const [sessionInfo] = await db.execute('SELECT * FROM battle_sessions WHERE sessionID = ?', [sessionID]);
+    if ((sessionInfo as any[]).length <= 0) {
+        res.status(400).send('Nie znaleziono sesji walki');
+        return
+    }
+    const data : any = (sessionInfo as any[])[0];
+    let isLoggedIn: boolean = false;
+    if (auth?.isAuthenticated) {
+        isLoggedIn = true;
+    }
+    if (data.B_uuid === null && isLoggedIn) {
+        await db.execute('UPDATE battle_sessions SET B_uuid = ? WHERE sessionID = ?', [userID, sessionID]);
+        res.status(200);
+        res.redirect(`http://localhost:2137/api/battle/rooms/${sessionID}/?user=${userID}`);
+        return;
+    } else if (data.B_uuid === null && !isLoggedIn) {
+        res.status(400).send('Autoryzacja wymagana. Musisz sie zalogowac aby dołaczyc do walki!');
+        return;
+    }
+
+    if (data.B_uuid !== null) {
+        res.status(200);
+        res.redirect(`http://localhost:2137/api/battle/rooms/${sessionID}`);
+        return;
+    }
+
+
+
+}
 
 

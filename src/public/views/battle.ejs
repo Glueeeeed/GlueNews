@@ -15,6 +15,7 @@
     <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
           integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
           referrerpolicy="no-referrer" rel="stylesheet"/>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
     <script>
          window.__BATTLE = <%- JSON.stringify({ sessionID, user, sessionData }).replace(/</g, '\\u003c') %>;
     </script>
@@ -62,7 +63,7 @@
         <div class=" mt-20 w-full max-w-2xl bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
             <h1 class="text-3xl md:text-4xl font-bold text-center text-[#3a372e] mb-8">Witaj w trybie walki!</h1>
             <div class="space-y-6 text-gray-800 text-lg leading-relaxed text-center">
-                <p>Twoim zadaniem jest <span class="font-semibold text-[#3a372e]">dyskutować na wylosowany temat</span>
+                <p>Twoim zadaniem jest <span class="font-semibold text-[#3a372e]">dyskutować na dany temat</span>
                     zgodnie z przypisaną Ci rolą.</p>
                 <div class="flex justify-center gap-8 my-6 text-sm md:text-base">
                     <div class="bg-green-50 text-green-950 px-5 py-3 rounded-lg font-medium"><i

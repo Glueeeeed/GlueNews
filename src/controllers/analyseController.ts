@@ -32,6 +32,8 @@ interface outputResultData {
             return;
         }
 
+        console.log(input);
+
         const result : object =  await getAnalysisResult(input, process.env.GEMINI_API_KEY, 'gemini-2.5-flash');
         const id : string = await generateSession(result, input);
         console.log('Analysis session created with ID:', id);

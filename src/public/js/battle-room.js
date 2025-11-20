@@ -32,3 +32,20 @@ if (battleData.user.role === 'spectator') {
     document.getElementById('send-btn').hidden = true;
 
 }
+
+const socket = io({
+    query: {
+        sessionID: battleData.sessionID,
+        nickname: battleData.user.username,
+    }
+})
+
+socket.on('connect', (data) => {
+    console.log('Connected');
+
+})
+
+socket.on('test', (data) => {
+    addMessage('Test', 'system', 'System')
+})
+

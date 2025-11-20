@@ -20,6 +20,13 @@ async function createSession() {
             }),
         });
 
+        if (!getSession.ok) {
+            throw new Error('Session failed.');
+        }
+
+        const session = await getSession.json();
+        window.location.href = `http://localhost:2137/api/battle/rooms/${session.sessionBattleID}/?user=${session.uuid}`;
+
     } catch (error) {
         console.log(error);
     }
