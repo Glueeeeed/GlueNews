@@ -59,8 +59,8 @@ export const register = async (req: Request<{}, {}, registerRequest>, res: Respo
 
         const uuid = crypto.randomUUID();
 
-        await db.execute('INSERT INTO users (uuid, username, email, password, verified) VALUES (?,?,?,?,?)', [uuid, username, login, hashedPassword, true]);
-        // await createVerificationMail(uuid, login);
+        await db.execute('INSERT INTO users (uuid, username, email, password, verified) VALUES (?,?,?,?,?)', [uuid, username, login, hashedPassword, false]);
+        await createVerificationMail(uuid, login);
 
         res.status(201).json({message: 'Pomyslnie zarejestrowano! Sprawdz skrzynke email oraz folder spam!'})
     } catch (error) {

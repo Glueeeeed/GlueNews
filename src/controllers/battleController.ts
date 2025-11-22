@@ -29,9 +29,9 @@ export const createBattleSession = async (req: Request<{}, {}, getSessionRequest
     }
 
     const userID : any = auth?.userId;
-    const sessionID : string = crypto.randomBytes(8).toString('base64url');
+    const sessionID : string = crypto.randomBytes(6).toString('base64url');
 
-    await db.execute('INSERT INTO battle_sessions (sessionID, input, A_uuid, B_uuid) VALUES (?,?,?,?)', [sessionID, input, userID, null]);
+    await db.execute('INSERT INTO battle_sessions (sessionID, input, A_uuid, B_uuid, status) VALUES (?,?,?,?, ?)', [sessionID, input, userID, null, 'NOT YET STARTED']);
     res.status(200).json({ sessionBattleID: sessionID, uuid: userID });
 
 }

@@ -8,17 +8,6 @@ chat.addEventListener('scroll', () => {
     autoScroll = distanceFromBottom < SCROLL_THRESHOLD;
 });
 
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
-
-sendBtn.addEventListener('click', (e) => {
-    sendMessage();
-})
-
 input.addEventListener('input', () => {
     sendBtn.disabled = input.value.trim() === '';
     input.style.height = 'auto';
@@ -72,4 +61,10 @@ function sendMessage() {
     sendBtn.disabled = true;
     input.style.height = 'auto';
     input.focus();
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(Math.abs(seconds) / 60).toString().padStart(2, '0');
+    const secs = (Math.abs(seconds) % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
 }

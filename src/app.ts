@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import {softAuth} from "./middlewares/softAuth.ts";
 import {Server, Socket} from 'socket.io';
+import db from './configs/database.ts';
 
 
 //Uncomment when httpsMode is enabled
@@ -21,6 +22,7 @@ import analyse from './routes/analyse.ts';
 import keyExchange from './routes/keyExchange.ts';
 import auth from './routes/auth.ts';
 import battle from './routes/battle.ts';
+import {startBattle} from "./services/battleService.ts";
 
 
 
@@ -42,19 +44,92 @@ export const io = new Server(server, {
         } : undefined,
 })
 
+let usersReady = {
+    a: false,
+    b: false,
+}
 
-io.on('connection', (socket) => {
+ const Votes = new Map<string, number>();
+
+
+function countInRoom(room : string) {
+    return io.of("/").adapter.rooms.get(room)?.size || 0;
+}
+
+async function voteTimer(sessionID : string) {
+    const voteEndTime = Date.now() + 30_000;
+    io.to(sessionID).emit('voting');
+    const voteInterval = setInterval(async () => {
+        const remaining = Math.floor((voteEndTime - Date.now()) / 1000);
+        if (remaining <= 0) {
+            clearInterval(voteInterval);
+            io.to(sessionID).emit('voteEnded');
+            const [votingData] = await db.execute('SELECT * FROM battle_voting WHERE sessionID = ?', [sessionID]);
+            const data : any = (votingData as any[])[0];
+            let winner;
+            if (data.A_votings > data.B_votings) {
+                winner = 'a';
+            } else if (data.B_votings > data.A_votings) {
+                winner = 'b';
+            } else {
+                winner = 'remis';
+            }
+            io.to(sessionID).emit('voteResult', winner);
+        }
+    }, 1000);
+}
+
+io.on('connection', (socket) =>  {
     const sessionID : any = socket.handshake.query.sessionID;
     const nickname = socket.handshake.query.nickname;
+    const role = socket.handshake.query.role;
     console.log(nickname + " dolaczyl do sesji " + sessionID);
-
     socket.join(sessionID);
-
-    function emit() {
-        io.to(sessionID).emit('test');
+    const count = countInRoom(sessionID);
+    socket.emit('announcement', 'Pamietaj, ze słowa wulgarne mogą wpłynąć negatywnie na punktacje!');
+    if (count === 2) {
+        io.to(sessionID).emit('unlockButtons');
     }
+    socket.on('ready', async (player) => {
+        await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
+        if (player === 'a') {
+            usersReady.a = true;
+        } else if (player === 'b') {
+            usersReady.b = true;
+        }
+        if (usersReady.a && usersReady.b) {
+            const role = await startBattle(sessionID);
+            const endBattleTimer = Date.now() + 30_000;
+            io.to(sessionID).emit('startBattle', role)
+            const fightTimer = setInterval(() => {
+                const remaining = Math.floor((endBattleTimer! - Date.now()) / 1000);
+                io.to(sessionID).emit('timer', remaining);
+                if (remaining <= 0) {
+                    clearInterval(fightTimer);
+                     voteTimer(sessionID);
+                }
+            }, 1000);
+        }
+    });
 
-    setInterval(emit, 5000);
+
+
+
+
+    socket.on('message', (msg) => {
+        socket.to(sessionID).emit('message', {nickname: role + " | " + nickname, message: msg});
+    });
+
+    socket.on('vote', async (player)  => {
+        if (player === 'a') {
+            await db.execute('UPDATE battle_voting SET A_votings = A_votings + 1 WHERE sessionID = ?', [sessionID]);
+        } else if (player === 'b') {
+            await db.execute('UPDATE battle_voting SET B_votings = B_votings + 1 WHERE sessionID = ?', [sessionID]);
+        }
+    });
+
+
+
 
 
 })
