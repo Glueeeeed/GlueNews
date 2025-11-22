@@ -79,13 +79,14 @@ async function voteTimer(sessionID : string) {
     }, 1000);
 }
 
-io.on('connection', (socket) =>  {
+io.on('connection', async (socket) =>  {
     const sessionID : any = socket.handshake.query.sessionID;
     const nickname = socket.handshake.query.nickname;
     const role = socket.handshake.query.role;
     console.log(nickname + " dolaczyl do sesji " + sessionID);
     socket.join(sessionID);
     const count = countInRoom(sessionID);
+    socket.to(sessionID).emit('announcement', nickname + ' dołączył do sesji. (' + count + '/2)');
     socket.emit('announcement', 'Pamietaj, ze słowa wulgarne mogą wpłynąć negatywnie na punktacje!');
     if (count === 2) {
         io.to(sessionID).emit('unlockButtons');
@@ -99,8 +100,9 @@ io.on('connection', (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 30_000;
+            const endBattleTimer = Date.now() + 180_000;
             io.to(sessionID).emit('startBattle', role)
+            usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {
                 const remaining = Math.floor((endBattleTimer! - Date.now()) / 1000);
                 io.to(sessionID).emit('timer', remaining);
@@ -112,11 +114,22 @@ io.on('connection', (socket) =>  {
         }
     });
 
+    if (!socket.recovered) {
+        try {
+            const [messagesData] = await db.execute('SELECT * FROM battle_messages WHERE sessionID = ?', [sessionID]);
+            const messages = (messagesData as any[]);
+            socket.emit('loadMessages', messages);
+        } catch (err) {
+            console.error('Error fetching battle messages:', err);
+        }
+    }
 
 
 
 
-    socket.on('message', (msg) => {
+
+    socket.on('message', async (msg) => {
+        await db.execute('INSERT INTO battle_messages (sessionID, user_message, message, nickname) VALUES (?, ?, ?, ?)', [sessionID, role, msg, nickname]);
         socket.to(sessionID).emit('message', {nickname: role + " | " + nickname, message: msg});
     });
 

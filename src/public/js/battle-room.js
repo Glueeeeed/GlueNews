@@ -1,4 +1,5 @@
 const battleData = window.__BATTLE
+console.log(battleData)
 const chatrtf = document.getElementById('chatSection');
 const startSection = document.getElementById('startSection');
 const inviteSection = document.getElementById('inviteLinkSection');
@@ -80,6 +81,7 @@ if (battleData.user.role === 'spectator') {
     chatInput.hidden = true;
     document.getElementById('send-btn').hidden = true;
     checkToMember.hidden = true;
+    player = 'spectator';
 
 }
 
@@ -87,7 +89,7 @@ const socket = io({
     query: {
         sessionID: battleData.sessionID,
         nickname: battleData.user.username,
-        role: player,
+        role: player.toUpperCase(),
     }
 })
 
@@ -110,6 +112,7 @@ function ready() {
 }
 
 socket.on('startBattle', (role) => {
+    sessionStorage.setItem('game', 'true');
     startSection.hidden = true;
     if (player === 'a') {
         choosedRole.hidden = false;
@@ -129,6 +132,8 @@ socket.on('startBattle', (role) => {
 });
 
 socket.on('voting', () => {
+    sessionStorage.removeItem('game');
+    sessionStorage.setItem('voting', 'true');
     chatrtf.hidden = true;
     voteSection.hidden = false;
     if (battleData.user.role !== 'spectator') {
@@ -155,6 +160,25 @@ socket.on('votingResult', (data) => {
 
 socket.on('timer', (data) => {
     document.getElementById('timer').innerText = `${formatTime(data)}`;
+});
+
+socket.on('loadMessages', (data) => {
+    if (battleData.user.role !== 'spectator') {
+        data.forEach(msg => {
+            if (msg.nickname === battleData.user.username) {
+                sendMessage(msg.message);
+            } else {
+                const sender = msg.user_message + " | " + msg.nickname;
+                addMessage(msg.message, "other", sender);
+            }
+        });
+    } else {
+        data.forEach(msg => {
+            const sender = msg.user_message + " | " + msg.nickname;
+            addMessage(msg.message, "other", sender);
+        });}
+
+
 });
 
 

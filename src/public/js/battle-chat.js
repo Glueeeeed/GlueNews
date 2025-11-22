@@ -1,3 +1,12 @@
+addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem('game') === 'true') {
+        chatrtf.hidden = false;
+        startSection.hidden = true;
+    } else if (sessionStorage.getItem('voting') === 'true') {
+        voteSection.hidden = false;
+        chatrtf.hidden = true;
+    }
+});
 const input = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 const chat = document.getElementById('chat');
@@ -53,7 +62,11 @@ function scrollToBottom(smooth = true) {
 
 
 
-function sendMessage() {
+function sendMessage(insertText = null) {
+    if (insertText !== null) {
+        addMessage(insertText, 'me', 'Ty');
+        return;
+    }
     const text = input.value.trim();
     if (!text) return;
     addMessage(text, 'me', 'Ty');
