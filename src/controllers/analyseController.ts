@@ -1,3 +1,13 @@
+/**
+ * Analysis Controller Module
+ *
+ * This module handles data analysis requests and retrieval of analysis results.
+ * It utilizes services for generating analysis sessions and fetching results.
+ *
+ * @module analyseController
+ */
+
+
 import {Request, Response} from "express";
 import {generateSession, getAnalysisResult, getDataResults} from '../services/analyseService.ts';
 

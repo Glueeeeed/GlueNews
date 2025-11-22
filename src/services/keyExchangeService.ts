@@ -21,13 +21,6 @@ export function computeSharedSecret(serverSecretKey: Uint8Array, clientPublicKey
     return { sharedSecret: shared };
 }
 
-export const getSlicedSecret = (sessionID: string): string => {
-    const secret : string | undefined = Secrets.get(sessionID);
-    if (!secret) {
-        throw new Error('Invalid session ID');
-    }
-    return secret;
-};
 
 export const deleteSecret = (sessionID: string) : void => {
     try {

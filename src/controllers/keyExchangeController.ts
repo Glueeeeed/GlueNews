@@ -1,3 +1,14 @@
+/**
+ * Key Exchange Controller Module
+ *
+ * This module implements the Diffie-Hellman key exchange protocol using elliptic curve
+ * cryptography (P-256) to establish secure communication channels between clients and server.
+ * It manages session secrets and provides encryption of the application base key.
+ *
+ * @module keyExchangeController
+ */
+
+
 import {Request, Response} from "express";
 import crypto from "crypto";
 import {computeSharedSecret, generateKeyPair} from "../services/keyExchangeService.ts";

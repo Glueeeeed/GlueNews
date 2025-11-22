@@ -1,12 +1,22 @@
+/**
+ * Authentication Controller Module
+ *
+ * This module handles user registration, login, email verification, and authentication status checks.
+ *  It utilizes services for data validation, password hashing, email sending, and JWT token management.
+ *
+ * @module authController
+ */
+
+
 import {Request, Response} from 'express';
 import db from "../configs/database.ts";
 import {createVerificationMail, decryptData, hashArgon, validate, getUserHash, verifyHashArgon} from "../services/authService.ts";
 import {Secrets} from "./keyExchangeController.ts";
 import crypto from 'crypto';
 import {ValidationError, ConflictError, AuthenticationError, BadRequestError} from "../utils/error.ts";
-import jsonwebtoken, {JwtPayload} from 'jsonwebtoken';
+import jsonwebtoken from 'jsonwebtoken';
 import dotenv from "dotenv";
-import {sendVerificationMail} from "../services/mailService.ts";
+import {deleteSecret} from "../services/keyExchangeService.ts";
 dotenv.config({ path: './src/configs/secrets.env' });
 const secret : any = process.env.jwtSecret;
 
@@ -63,6 +73,7 @@ export const register = async (req: Request<{}, {}, registerRequest>, res: Respo
         await createVerificationMail(uuid, login);
 
         res.status(201).json({message: 'Pomyslnie zarejestrowano! Sprawdz skrzynke email oraz folder spam!'})
+        deleteSecret(sessionID); // Clean up the session secret after use
     } catch (error) {
         if (error instanceof ValidationError) {
               res.status(400).json({ error: error.message });
@@ -73,6 +84,7 @@ export const register = async (req: Request<{}, {}, registerRequest>, res: Respo
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
+
 
 
 
@@ -117,6 +129,7 @@ export const login = async (req: Request<{}, {}, loginRequest>, res: Response<re
         console.log('Auth cookie generated successfully.');
 
         res.status(200).json({message: 'ok'})
+        deleteSecret(sessionID);
 
 
 

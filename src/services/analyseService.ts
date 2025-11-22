@@ -84,8 +84,6 @@ export async function generateSession(response: any, input: any) : Promise<strin
     const sessionID = crypto.randomBytes(16).toString('base64url');
     const reasonsJson = JSON.stringify(response.reasons || []);
     const sourcesJson = JSON.stringify(response.sources || []);
-    // console.log(sourcesJson);
-    // console.log(reasonsJson);
     const truthScore = response.truth_score ?? null;
     const verdict = formatVerdict(response.verdict);
     await db.execute('INSERT INTO sessions (sessionID, truthScore, verdict, reason, sources, input) VALUES (?, ?, ?, ? , ?, ?)', [sessionID, truthScore, verdict, reasonsJson, sourcesJson, input]);
