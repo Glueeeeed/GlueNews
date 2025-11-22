@@ -2,8 +2,7 @@
  * Key Exchange Controller Module
  *
  * This module implements the Diffie-Hellman key exchange protocol using elliptic curve
- * cryptography (P-256) to establish secure communication channels between clients and server.
- * It manages session secrets and provides encryption of the application base key.
+ * cryptography (x25519) to establish secure communication channels between clients and server.
  *
  * @module keyExchangeController
  */

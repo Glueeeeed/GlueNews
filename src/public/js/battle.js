@@ -20,8 +20,11 @@ async function createSession() {
             }),
         });
 
+
         if (!getSession.ok) {
-            throw new Error('Session failed.');
+            const errorData = await getSession.json();
+            document.getElementById('inputText').value = 'Nie udalo sie uruchomic trybu walki. Sprobuj ponownie.';
+            throw new Error(errorData.error);
         }
 
         const session = await getSession.json();

@@ -23,6 +23,7 @@ import keyExchange from './routes/keyExchange.ts';
 import auth from './routes/auth.ts';
 import battle from './routes/battle.ts';
 import {startBattle} from "./services/battleService.ts";
+import {isNicknameInRoom} from "./utils/sockets.ts";
 
 
 
@@ -83,6 +84,12 @@ io.on('connection', async (socket) =>  {
     const sessionID : any = socket.handshake.query.sessionID;
     const nickname = socket.handshake.query.nickname;
     const role = socket.handshake.query.role;
+    const isUserExisting = isNicknameInRoom(io, sessionID, String(nickname));
+    if (isUserExisting) {
+        socket.emit('duplicateNickname');
+        socket.disconnect();
+        return;
+    }
     console.log(nickname + " dolaczyl do sesji " + sessionID);
     socket.join(sessionID);
     const count = countInRoom(sessionID);

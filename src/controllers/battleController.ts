@@ -133,8 +133,9 @@ export const battleRoom = async (req: Request<battleRoomParams, {}, {}, battleRo
  * if they are not already assigned and the user is authenticated. It then redirects
  * the user to the appropriate battle room URL.
  *
- * Behavior:
+ *  Behavior:
  *  - If session not found -> responds 400 and stops.
+ *  - If user tries to join their own battle as second player -> respond 400 with error message.
  *  - If `B_uuid` is null:
  *  - If authenticated -> update DB, redirect to `/api/battle/rooms/:sessionID/?user=<userId>` (200).
  *  - If not authenticated -> respond 400 with a login-required message.
@@ -157,6 +158,13 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
         if (auth?.isAuthenticated) {
             isLoggedIn = true;
         }
+
+        if (data.A_uuid === userID) {
+            res.status(400).send('Nie możesz dołączyć do własnej walki jako drugi gracz.');
+            return;
+        }
+
+
         if (data.B_uuid === null && isLoggedIn) {
             await db.execute('UPDATE battle_sessions SET B_uuid = ? WHERE sessionID = ?', [userID, sessionID]);
             res.status(200);
@@ -166,6 +174,7 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
             res.status(400).send('Autoryzacja wymagana. Musisz sie zalogowac aby dołaczyc do walki!');
             return;
         }
+
 
         if (data.B_uuid !== null) {
             res.status(200);

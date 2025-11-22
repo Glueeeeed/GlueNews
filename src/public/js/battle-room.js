@@ -98,6 +98,11 @@ socket.on('connect', () => {
 
 })
 
+socket.on('duplicateNickname', () => {
+    alert('Nie mozesz dołączyć do pokoju, ponieważ twoja nazwa użytkownika jest już zajęta w tej sesji.');
+    window.location.href = '/';
+});
+
 socket.on('announcement', (data) => {
     addMessage(data, 'system', 'System')
 })
