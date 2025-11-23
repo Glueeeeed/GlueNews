@@ -130,6 +130,23 @@ export async function countVotes(sessionID: string, jugdeData : any, memberCount
         isDraw = true;
 
     }
+    const [userUUIDsData] = await db.execute('SELECT A_uuid, B_uuid FROM battle_sessions WHERE sessionID = ?', [sessionID]);
+    const userUUIDs = (userUUIDsData as any[])[0];
+    let winnerUUID: string;
+    let loserUUID: string;
+    if (winner === 'A') {
+        winnerUUID = userUUIDs.A_uuid;
+        loserUUID = userUUIDs.B_uuid;
+    } else if (winner === 'B') {
+        winnerUUID = userUUIDs.B_uuid;
+        loserUUID = userUUIDs.A_uuid;
+    } else {
+        winnerUUID = userUUIDs.A_uuid;
+        loserUUID = userUUIDs.B_uuid;
+    }
+
+    await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [winnerScore, winnerUUID]);
+    await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [loserScore, loserUUID]);
     await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw) VALUES (?, ?, ?, ?, ?, ?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw]);
     await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['ENDED', sessionID]);
 

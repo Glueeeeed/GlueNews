@@ -183,6 +183,7 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
         } else if (data.B_uuid === null && !isLoggedIn) {
             const targetPath = `/api/battle/rooms/${sessionID}`
             res.redirect(302, `/login?redirect=${encodeURIComponent(targetPath)}`);
+            return;
         }
 
 
@@ -266,6 +267,21 @@ export const showBattleResults = async (req: Request<battleRoomParams, {}, {},{}
             LOSERROLE: loserRole,
         });
 } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+export const leaderboard = async (req: Request, res: Response) : Promise<void> => {
+    try {
+        const [leaderboardData] = await db.execute('SELECT users.username, leaderboard.score FROM leaderboard JOIN users ON leaderboard.uuid = users.uuid ORDER BY leaderboard.score DESC LIMIT 10');
+        const data : any[] = (leaderboardData as any[]);
+
+        res.render('battleLeaderboard.ejs', {
+            leaderboard: data,
+        });
+
+    } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');
     }

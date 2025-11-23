@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>GlueNews | Leaderboard</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" integrity="sha512-kJlvECunwXftkPwyvHbclArO8wszgBGisiLeuDFwNM8ws+wKIw0sv1os3ClWZOcrEB2eRXULYUsm8OVRGJKwGA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="http://localhost:2137/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-white">
+<nav class="fixed w-full top-0 z-10 text-amber-50 navbar ">
+    <div class="flex justify-start items-center">
+        <p class="text-4xl mt-5 mb-5 ml-10 font-['Pacifico'] text-[#eff1ed]">GlueNews</p>
+    </div>
+</nav>
+<main class="mt-32">
+    <section id="leaderboard" class="flex items-center justify-center">
+        <div class="mt-20 w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-[#3a372e] mb-2">Tabela Liderów</h1>
+                <p class="text-gray-600 mb-8">Top 10 graczy według zdobytych punktów</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-separate border-spacing-y-3">
+                    <thead>
+                        <tr class="text-left text-gray-600 text-sm">
+                            <th class="px-4 py-2">Miejsce</th>
+                            <th class="px-4 py-2">Gracz</th>
+                            <th class="px-4 py-2 text-right">Punkty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (leaderboard && leaderboard.length > 0) { %>
+                            <% leaderboard.forEach(function(item, index){ %>
+                                <tr class="bg-white hover:bg-gray-50 transition-all shadow-sm border border-gray-100 rounded-xl">
+                                    <td class="px-4 py-3 align-middle whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full <%= index === 0 ? 'bg-yellow-400 text-white' : (index === 1 ? 'bg-gray-400 text-white' : (index === 2 ? 'bg-amber-700 text-white' : 'bg-gray-200 text-gray-700')) %>">
+                                                <%= index + 1 %>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 align-middle">
+                                        <div class="flex items-center gap-3">
+                                            <div>
+                                                <p class="font-semibold text-[#3a372e]"><%= item.username %></p>
+                                                <p class="text-sm text-gray-500">Gracz GlueNews</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 align-middle text-right font-bold text-[#3a372e]">
+                                        <%= item.score %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3" class="px-4 py-6 text-center text-gray-500">Brak danych do wyświetlenia.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-center mt-8">
+                <a href="/" class="px-5 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200">Powrót do GlueNews</a>
+            </div>
+        </div>
+    </section>
+</main>
+<footer class="navbar text-white py-8 mt-120">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 mt-6 md:mb-0">
+                <a href="#" class="text-3xl font-['Pacifico'] text-white">GlueNews</a>
+                <p class="mt-5 max-sm:text-sm opacity-80">Twoje narzędzie do weryfikacji informacji w erze dezinformacji. <br> Razem budujemy bardziej świadome społeczeństwo.</p>
+            </div>
+        </div>
+        <div class="border-t border-white/20 mt-6 p-6 text-center">
+            <p class="opacity-80">Stworzono z <i class=" text-red-600 ri-heart-fill"></i> przez Glueeed.</p>
+            <p class="opacity-80">Projekt open-source dostępny na <a href="https://github.com/Glueeeeed/GlueNews"><i class="ri-github-fill"></i> GitHub</a></p>
+            <p class="text-sm mt-3 opacity-60">Version 1.0.0</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

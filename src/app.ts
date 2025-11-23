@@ -24,6 +24,7 @@ import auth from './routes/auth.ts';
 import battle from './routes/battle.ts';
 import {countVotes, judgeMessages, startBattle} from "./services/battleService.ts";
 import {isNicknameInRoom} from "./utils/sockets.ts";
+import leaderboard from "./routes/leaderboard.ts";
 
 
 
@@ -78,7 +79,7 @@ function countInRoom(room : string) {
 async function voteTimer(sessionID : string) {
     const voteEndTime = Date.now() + 30_000;
     VotedIPs.set(sessionID, new Set<string>());
-    await db.execute('UPDATE battle_sessions SET status = ? WHERE session', [ 'VOTING', sessionID]);
+    await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['VOTING', sessionID]);
     await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
     io.to(sessionID).emit('voting');
     const judgeData =  await judgeMessages(sessionID);
@@ -136,7 +137,7 @@ io.on('connection', async (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 300_000;
+            const endBattleTimer = Date.now() + 40_000;
             io.to(sessionID).emit('startBattle', role)
             usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {
@@ -254,6 +255,7 @@ app.use('/api', analyse);
 app.use('/api', keyExchange);
 app.use('/api/auth/', auth);
 app.use('/api/battle/', battle )
+app.use('/battle/', leaderboard )
 
 
 if (httpsMode) {

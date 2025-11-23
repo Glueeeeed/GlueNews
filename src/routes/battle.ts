@@ -3,7 +3,8 @@ import {
     battleRoom,
     createBattleSession,
     initializeBattleRoom,
-    showBattleResults
+    showBattleResults,
+    leaderboard
 } from '../controllers/battleController.ts';
 
 const router: Router = express.Router();
