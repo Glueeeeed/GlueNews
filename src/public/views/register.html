@@ -36,7 +36,7 @@
         <div class="flex flex-col items-center justify-center mt-[10%]">
             <div class="items-center font-['Segoe UI', Tahoma, Geneva, Verdana, sans-serif'] font-medium flex-row w-100 max-lg:w-[75%] max-md:w-[90%] max-sm:w-[90%] box shadow-sm rounded-lg border border-gray-200 p-3">
                 <h1 class=" mt-[10%] text-center text-[#3a372e] font-bold text-2xl"> Zarejestruj sie</h1>
-                <p class=" mt-2 text-center text-black opacity-60">Aby skorzystac z trybu walki</p>
+                <p class=" mt-2 text-center text-black opacity-60">Aby skorzystac z GlueNews</p>
                 <div class="relative w-full p-3">
                     <label for="emailInput"></label><input
                         class=" mt-[2.5%] ml-[2.5%] mr-[3%] w-[95%] h-9 p-3 pl-12 text-black  bg-gray-100  border border-gray-200  rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
@@ -57,11 +57,16 @@
                         id="passwordInput" placeholder="********" type="password"/>
                     <i class="fa-solid fa-lock input-icon absolute pl-7 pb-2  mt-1 top-1/2  -translate-y-1/2 text-gray-400"></i>
                     <div class="flex flex-col items-baseline-last  ">
-                        <button class="absolute  mt-5 mr-[5%] top-1/6 -translate-y-1/2 text-gray-400 hover:text-violet-400 focus:outline-none"
-                                id="togglePassword" onclick="showPass()">
-                            <i class="fa-solid fa-eye" id="eye"></i>
+                        <button class="absolute  mt-5 mr-[5%] top-1/6 -translate-y-1/2 text-gray-400 hover:text-green-950 focus:outline-none"
+                                id="togglePassword" onclick="showPassword1()">
+                            <i  class="fa-solid fa-eye" id="eye"></i>
                         </button>
                     </div>
+                </div>
+                <div>
+                    <p class="text-center m-4 mb-2 font-color opacity-70 text-sm">Masz już konto? <a
+                            class=" font-bold text-[#3a372e] hover:text-green-950" href="http://localhost:2137/login">
+                        Zaloguj sie</a></p>
                 </div>
                 <div class="w-full flex justify-center p-3">
                     <button class="mx-auto px-10 py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)]"

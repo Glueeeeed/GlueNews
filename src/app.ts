@@ -22,7 +22,7 @@ import analyse from './routes/analyse.ts';
 import keyExchange from './routes/keyExchange.ts';
 import auth from './routes/auth.ts';
 import battle from './routes/battle.ts';
-import {startBattle} from "./services/battleService.ts";
+import {countVotes, judgeMessages, startBattle} from "./services/battleService.ts";
 import {isNicknameInRoom} from "./utils/sockets.ts";
 
 
@@ -58,24 +58,17 @@ function countInRoom(room : string) {
 }
 
 async function voteTimer(sessionID : string) {
-    const voteEndTime = Date.now() + 30_000;
+    const voteEndTime = Date.now() + 20_000;
+    await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
     io.to(sessionID).emit('voting');
+    const judgeData =  await judgeMessages(sessionID);
     const voteInterval = setInterval(async () => {
         const remaining = Math.floor((voteEndTime - Date.now()) / 1000);
         if (remaining <= 0) {
+            await countVotes(sessionID, judgeData);
             clearInterval(voteInterval);
-            io.to(sessionID).emit('voteEnded');
-            const [votingData] = await db.execute('SELECT * FROM battle_voting WHERE sessionID = ?', [sessionID]);
-            const data : any = (votingData as any[])[0];
-            let winner;
-            if (data.A_votings > data.B_votings) {
-                winner = 'a';
-            } else if (data.B_votings > data.A_votings) {
-                winner = 'b';
-            } else {
-                winner = 'remis';
-            }
-            io.to(sessionID).emit('voteResult', winner);
+            console.log('Voting ended for session:', sessionID);
+            io.to(sessionID).emit('votingEnded');
         }
     }, 1000);
 }
@@ -99,7 +92,6 @@ io.on('connection', async (socket) =>  {
         io.to(sessionID).emit('unlockButtons');
     }
     socket.on('ready', async (player) => {
-        await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
         if (player === 'a') {
             usersReady.a = true;
         } else if (player === 'b') {
@@ -107,7 +99,7 @@ io.on('connection', async (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 180_000;
+            const endBattleTimer = Date.now() + 60_000;
             io.to(sessionID).emit('startBattle', role)
             usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {
@@ -115,7 +107,8 @@ io.on('connection', async (socket) =>  {
                 io.to(sessionID).emit('timer', remaining);
                 if (remaining <= 0) {
                     clearInterval(fightTimer);
-                     voteTimer(sessionID);
+                      voteTimer(sessionID);
+                      socket.disconnect(sessionID);
                 }
             }, 1000);
         }
@@ -131,32 +124,21 @@ io.on('connection', async (socket) =>  {
         }
     }
 
-
-
-
-
     socket.on('message', async (msg) => {
-        await db.execute('INSERT INTO battle_messages (sessionID, user_message, message, nickname) VALUES (?, ?, ?, ?)', [sessionID, role, msg, nickname]);
-        socket.to(sessionID).emit('message', {nickname: role + " | " + nickname, message: msg});
+        await db.execute('INSERT INTO battle_messages (sessionID, user_message, message, nickname, role, topic) VALUES (?, ?, ?, ?, ?, ?)', [sessionID, role, msg.msg, nickname, msg.role, msg.topic]);
+        console.log('Message saved to database');
+        socket.to(sessionID).emit('message', {nickname: role + " | " + nickname, message: msg.msg});
     });
 
     socket.on('vote', async (player)  => {
-        if (player === 'a') {
+        if (player === 'A') {
             await db.execute('UPDATE battle_voting SET A_votings = A_votings + 1 WHERE sessionID = ?', [sessionID]);
-        } else if (player === 'b') {
+        } else if (player === 'B') {
             await db.execute('UPDATE battle_voting SET B_votings = B_votings + 1 WHERE sessionID = ?', [sessionID]);
         }
     });
 
-
-
-
-
-})
-
-
-
-
+});
 
 //Uncomment when httpsMode is enabled
 
@@ -194,9 +176,6 @@ app.get('/login', (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, 'public', '/views' ,'login.html'));
 })
 
-app.get('/socket', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, 'public', '/views' ,'socket.html'));
-})
 
 
 // API endpoints

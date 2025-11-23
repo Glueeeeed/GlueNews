@@ -5,9 +5,15 @@ import {randomBytes} from 'https://cdn.jsdelivr.net/npm/@noble/ciphers@2.0.1/uti
 
 
 const registerBtn = document.getElementById('registerBtn');
+const showButton = document.getElementById('togglePassword');
+showButton.addEventListener('click', e => {
+    showPassword();
+})
 registerBtn.addEventListener('click', () => {
      register();
 });
+
+
 
 async function register() {
     const username = document.getElementById('usernameInput').value;
@@ -86,5 +92,20 @@ async function getSessionKey() {
         console.log("Wystapil blad podczas wymiany kluczy: ", error);
     }
 
+
+}
+
+function showPassword1() {
+    const passwordInput = document.getElementById('passwordInput');
+    const showIcon = document.getElementById('eye');
+    if (showIcon.classList.contains('text-gray-500')) {
+        passwordInput.type = 'text';
+        showIcon.classList.remove('text-gray-500');
+        showIcon.classList.add('text-gray-900');
+    } else if (showIcon.classList.contains('text-gray-900')) {
+        passwordInput.type = 'password';
+        showIcon.classList.remove('text-gray-900');
+        showIcon.classList.add('text-gray-500');
+    }
 
 }

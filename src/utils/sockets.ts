@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+
 export function isNicknameInRoom(io: Server, room: string, nickname: string): boolean {
     const roomSet = io.of('/').adapter.rooms.get(room);
     if (!roomSet) return false;

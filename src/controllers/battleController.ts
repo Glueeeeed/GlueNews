@@ -188,4 +188,71 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
 
 }
 
+export const showBattleResults = async (req: Request<battleRoomParams, {}, {},{}>,res: Response) : Promise<void> => {
+    try {
+        const {sessionID} = req.params;
+        const [resultData] = await db.execute('SELECT * FROM battle_result WHERE sessionID = ?', [sessionID]);
+        if ((resultData as any[]).length <= 0) {
+            res.status(404).send('Nie znaleziono wyników walki');
+            return;
+        }
+        const data : any = (resultData as any[])[0];
+
+        const [playerUUIDs] = await db.execute('SELECT A_uuid, B_uuid, A_role, B_role FROM battle_sessions WHERE sessionID = ?', [sessionID]);
+        const uuids : any = (playerUUIDs as any[])[0];
+        const [playerNicknamesData] = await db.execute('SELECT username, uuid FROM users WHERE uuid IN (?, ?)', [uuids.A_uuid, uuids.B_uuid]);
+        const playerNicknames : any[] = (playerNicknamesData as any[]);
+
+        let winner: string = '';
+        let loser: string = '';
+        let winnerRole: string = '';
+        let loserRole: string = '';
+
+        playerNicknames.forEach((playerNickname) => {
+            if (data.winner !== 'REMIS' && playerNickname.uuid === uuids.A_uuid) {
+                if (data.winner === 'A') {
+                    winner = playerNickname.username;
+                    winnerRole = uuids.A_role;
+                } else if (data.loser === 'A') {
+                    loser = playerNickname.username;
+                    loserRole = uuids.A_role;
+                }
+            } else if (data.winner !== 'REMIS' && playerNickname.uuid === uuids.B_uuid) {
+                if (data.winner === 'B') {
+                    winner = playerNickname.username;
+                    winnerRole = uuids.B_role;
+                } else if (data.loser === 'B') {
+                    loser = playerNickname.username;
+                    loserRole = uuids.B_role;
+                }
+            } else if (data.winner === 'REMIS') {
+                if (playerNickname.uuid === uuids.A_uuid) {
+                    winner = playerNickname.username;
+                    loser = playerNickname.username;
+                    winnerRole = uuids.A_role;
+                    loserRole = uuids.A_role;
+                } else if (playerNickname.uuid === uuids.B_uuid) {
+                    winner = playerNickname.username;
+                    loser = playerNickname.username;
+                    winnerRole = uuids.B_role;
+                    loserRole = uuids.B_role;
+                }
+            }
+        });
+
+
+        res.render('battleResults', {
+            sessionID: sessionID,
+            resultData: data,
+            WINNER: winner,
+            LOSER: loser,
+            WINNERROLE: winnerRole,
+            LOSERROLE: loserRole,
+        });
+} catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
 

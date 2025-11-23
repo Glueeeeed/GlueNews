@@ -8,6 +8,10 @@ const registerBtn = document.getElementById('loginBtn');
 registerBtn.addEventListener('click', () => {
     login();
 });
+const showButton = document.getElementById('togglePassword');
+showButton.addEventListener('click', e => {
+    showPassword();
+})
 
 async function login() {
     const email = document.getElementById('emailInput').value;
@@ -84,5 +88,20 @@ async function getSessionKey() {
         console.log("Wystapil blad podczas wymiany kluczy: ", error);
     }
 
+
+}
+
+function showPassword() {
+    const passwordInput = document.getElementById('passwordInput');
+    const showIcon = document.getElementById('eye');
+    if (showIcon.classList.contains('text-gray-500')) {
+        passwordInput.type = 'text';
+        showIcon.classList.remove('text-gray-500');
+        showIcon.classList.add('text-gray-900');
+    } else if (showIcon.classList.contains('text-gray-900')) {
+        passwordInput.type = 'password';
+        showIcon.classList.remove('text-gray-900');
+        showIcon.classList.add('text-gray-500');
+    }
 
 }

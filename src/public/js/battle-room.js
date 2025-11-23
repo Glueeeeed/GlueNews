@@ -17,16 +17,17 @@ const voteBBtn = document.getElementById('voteBBtn');
 
 
 let player;
+let playerRole;
 
 
 sendBtn.addEventListener('click', (e) => {
-        socket.emit('message', (input.value));
+        socket.emit('message', {msg: input.value, role: playerRole, topic: battleData.sessionData.input});
         sendMessage();
 })
 input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        socket.emit('message', (input.value));
+        socket.emit('message', {msg: input.value, role: playerRole, topic: battleData.sessionData.input});
         sendMessage();
     }
 });
@@ -120,6 +121,7 @@ socket.on('startBattle', (role) => {
     sessionStorage.setItem('game', 'true');
     startSection.hidden = true;
     if (player === 'a') {
+        playerRole = role.a
         choosedRole.hidden = false;
         if (role.a === "OBRONCA") {
             rolaObronca.hidden = false;
@@ -127,6 +129,7 @@ socket.on('startBattle', (role) => {
             rolaObalator.hidden = false;
         }
     } else if (player === 'b') {
+        playerRole = role.b
         choosedRole.hidden = false;
         if (role.b === "OBRONCA") {
             rolaObronca.hidden = false;
@@ -150,6 +153,12 @@ socket.on('voting', () => {
         voteBBtn.disabled = false;
     }
 
+})
+
+socket.on('votingEnded', () => {
+   sessionStorage.removeItem('game');
+   sessionStorage.removeItem('voting');
+   window.location.href = '/api/battle/results/' + battleData.sessionID;
 })
 
 socket.on('message', (data) => {
