@@ -98,6 +98,7 @@ export async function getDataResults(sessionID: string) : Promise<object> {
         throw new Error('Session not found');
     }
     const result = {
+        session: sessionID,
         truthScore: session.truthScore,
         verdict: formatVerdict(session.verdict),
         reasons: JSON.parse(session.reason),

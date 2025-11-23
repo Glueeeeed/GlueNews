@@ -1,5 +1,5 @@
 function copyToClipboard(sessionID) {
-    const text = 'http://localhost:2137/api/battle/results/' + sessionID // CHANGE TO YOUR DOMAIN
+    const text = `http://localhost:2137/api/results/${sessionID}` // CHANGE TO YOUR DOMAIN`
     navigator.clipboard.writeText(text).then(() => {
         alert('Skopiowano do schowka!');
     }).catch(err => {

@@ -44,8 +44,8 @@
                     </ul>
                 </div>
                 <div class="flex flex-row justify-center mt-4 gap-[3%] mb-4 ml-2 mr-4">
-                    <button class=" px-30 max-lg:px-20 max-sm:px-15  py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg  transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px]"></i> Powrot</button>
-                    <button class=" px-30 max-lg:px-20 max-sm:px-15 py-2 text-sm font-semibold text-violet-100 bg-gray-400 rounded-lg   transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px]"></i> Udostepnij </button>
+                    <button onclick="redirect('/')" class=" px-30 max-lg:px-20 max-sm:px-15  py-2 text-sm font-semibold text-violet-100 bg-gray-500 rounded-lg  transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px]"></i> Powrot</button>
+                    <button onclick="copyToClipboard('<%=data.session%>')" class=" px-30 max-lg:px-20 max-sm:px-15 py-2 text-sm font-semibold text-violet-100 bg-gray-400 rounded-lg   transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_10px_12px_rgba(0,0,0,0.3)] active:translate-y-0 active:border-b-2 active:shadow-[0_4px_8px_rgba(0,0,0,0.2)] "> <i class=" text-[18px]"></i> Udostepnij </button>
                 </div>
 
             </div>
@@ -67,6 +67,6 @@
         </div>
     </div>
 </footer>
-
+<script src="http://localhost:2137/js/results.js"></script>
 </body>
 </html>
