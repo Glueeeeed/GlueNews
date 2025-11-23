@@ -45,12 +45,30 @@ export const io = new Server(server, {
         } : undefined,
 })
 
-let usersReady = {
+// Extract best-effort client IP address for a Socket.IO connection
+function getClientIP(socket: Socket): string {
+    const xff = socket.handshake.headers['x-forwarded-for'];
+    let ip = '';
+    if (typeof xff === 'string' && xff.length > 0) {
+        ip = xff.split(',')[0].trim();
+    } else if (Array.isArray(xff) && xff.length > 0) {
+        ip = xff[0];
+    } else {
+        ip = socket.handshake.address || '';
+    }
+    if (ip.startsWith('::ffff:')) {
+        ip = ip.substring(7);
+    }
+    return ip;
+}
+
+ let usersReady = {
     a: false,
     b: false,
 }
 
  const Votes = new Map<string, number>();
+ const VotedIPs = new Map<string, Set<string>>();
 
 
 function countInRoom(room : string) {
@@ -59,6 +77,8 @@ function countInRoom(room : string) {
 
 async function voteTimer(sessionID : string) {
     const voteEndTime = Date.now() + 20_000;
+    VotedIPs.set(sessionID, new Set<string>());
+
     await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
     io.to(sessionID).emit('voting');
     const judgeData =  await judgeMessages(sessionID);
@@ -71,6 +91,12 @@ async function voteTimer(sessionID : string) {
             io.to(sessionID).emit('votingEnded');
         }
     }, 1000);
+}
+
+async function timeoutBattle(sessionID: string) {
+    console.log('Deleting session due to timeout:', sessionID);
+    io.to(sessionID).emit('timeout');
+    await db.execute('DELETE FROM battle_sessions WHERE sessionID = ?', [sessionID]);
 }
 
 io.on('connection', async (socket) =>  {
@@ -90,6 +116,17 @@ io.on('connection', async (socket) =>  {
     socket.emit('announcement', 'Pamietaj, ze słowa wulgarne mogą wpłynąć negatywnie na punktacje!');
     if (count === 2) {
         io.to(sessionID).emit('unlockButtons');
+
+    } else if (count  <= 1) {
+        const sessionTimeout = setTimeout(async () => {
+            if (countInRoom(sessionID) < 2) {
+                await timeoutBattle(sessionID);
+                socket.disconnect();
+            } else {
+                clearTimeout(sessionTimeout);
+            }
+        }, 180_000);
+
     }
     socket.on('ready', async (player) => {
         if (player === 'a') {
@@ -99,7 +136,7 @@ io.on('connection', async (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 60_000;
+            const endBattleTimer = Date.now() + 300_000;
             io.to(sessionID).emit('startBattle', role)
             usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {
@@ -108,7 +145,6 @@ io.on('connection', async (socket) =>  {
                 if (remaining <= 0) {
                     clearInterval(fightTimer);
                       voteTimer(sessionID);
-                      socket.disconnect(sessionID);
                 }
             }, 1000);
         }
@@ -131,14 +167,41 @@ io.on('connection', async (socket) =>  {
     });
 
     socket.on('vote', async (player)  => {
-        if (player === 'A') {
-            await db.execute('UPDATE battle_voting SET A_votings = A_votings + 1 WHERE sessionID = ?', [sessionID]);
-        } else if (player === 'B') {
-            await db.execute('UPDATE battle_voting SET B_votings = B_votings + 1 WHERE sessionID = ?', [sessionID]);
+        try {
+            const ip = getClientIP(socket);
+            if (!ip) {
+                socket.emit('voteRejected', { reason: 'Brak adresu IP' });
+                return;
+            }
+            let set = VotedIPs.get(sessionID);
+            if (!set) {
+                set = new Set<string>();
+                VotedIPs.set(sessionID, set);
+            }
+            if (set.has(ip)) {
+                socket.emit('voteRejected', { reason: 'Głos z tego adresu IP został już oddany' });
+                return;
+            }
+
+            if (player === 'A') {
+                await db.execute('UPDATE battle_voting SET A_votings = A_votings + 1 WHERE sessionID = ?', [sessionID]);
+            } else if (player === 'B') {
+                await db.execute('UPDATE battle_voting SET B_votings = B_votings + 1 WHERE sessionID = ?', [sessionID]);
+            } else {
+                socket.emit('voteRejected', { reason: 'Nieprawidłowy wybór gracza' });
+                return;
+            }
+
+            set.add(ip);
+            socket.emit('voteAccepted');
+        } catch (e) {
+            console.error('Vote error:', e);
+            socket.emit('voteRejected', { reason: 'Błąd serwera' });
         }
     });
 
 });
+
 
 //Uncomment when httpsMode is enabled
 

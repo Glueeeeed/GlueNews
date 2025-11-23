@@ -185,6 +185,11 @@ socket.on('timer', (data) => {
     document.getElementById('timer').innerText = `${formatTime(data)}`;
 });
 
+socket.on('timeout', () => {
+    alert('Ze względu na przekroczenie czasu oczekiwania nastąpi przekierowanie do strony głównej.');
+    window.location.href = '/';
+});
+
 socket.on('loadMessages', (data) => {
     if (battleData.user.role !== 'spectator') {
         data.forEach(msg => {

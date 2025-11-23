@@ -164,6 +164,13 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
             return;
         }
 
+        if (data.status === 'ENDED') {
+            res.status(400).send('Ta walka już się zakończyła.');
+            return;
+        }
+
+
+
 
         if (data.B_uuid === null && isLoggedIn) {
             await db.execute('UPDATE battle_sessions SET B_uuid = ? WHERE sessionID = ?', [userID, sessionID]);
@@ -176,11 +183,15 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
         }
 
 
-        if (data.B_uuid !== null) {
+        if (data.B_uuid !== null && data.status !== 'NOT YET STARTED') {
             res.status(200);
             res.redirect(`http://localhost:2137/api/battle/rooms/${sessionID}`);
             return;
+        } else {
+            res.status(400).send('Ta walka jeszcze się nie rozpoczęła. Mozesz dolaczyc jako widz dopiero gdy walka sie rozpocznie.');
+            return;
         }
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');
