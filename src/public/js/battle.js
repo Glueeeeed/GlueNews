@@ -28,7 +28,7 @@ async function createSession() {
         }
 
         const session = await getSession.json();
-        window.location.href = `http://localhost:2137/api/battle/rooms/${session.sessionBattleID}/?user=${session.uuid}`;
+        window.location.href = `http://localhost:2137/api/battle/rooms/${session.sessionBattleID}/?user=${session.uuid}`; // CHANGE TO YOUR DOMAIN
 
     } catch (error) {
         console.log(error);

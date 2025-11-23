@@ -49,7 +49,7 @@ export async function judgeMessages(sessionID: string) {
                 '3. Przekonującość: Który gracz był bardziej przekonujący i potrafił lepiej wpłynąć na odbiorcę?\n' +
                 '\n' + 'Oceniaj wedlug takiej punktacji:\n' +
                 ' +15pkt bazowo dla obu graczy,\n' +
-                ' +20pkt za podane źródła,\n' +
+                ' +20pkt za podane źródła, które są poprawne i zgodne z tematem\n' +
                 ' +5pkt za każde dobre pytanie do przeciwnika,\n' +
                 ' +10pkt za logiczne argumenty\n' +
                 ' +15pkt za przekonujące wypowiedzi,\n' +

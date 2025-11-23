@@ -46,7 +46,7 @@ async function waitInput() {
 }
 
 async function checkStatus(){
-    const status = await fetch(`http://localhost:2137/api/auth/status`, {
+    const status = await fetch(`http://localhost:2137/api/auth/status`, { // CHANGE TO YOUR DOMAIN
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

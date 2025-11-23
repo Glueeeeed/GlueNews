@@ -164,6 +164,11 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
             return;
         }
 
+        if (data.status === 'VOTING') {
+            res.status(400).send('Głosowanie w tej walce jest w toku. Nie można już dołączyć jako gracz ani widz.');
+            return;
+        }
+
         if (data.status === 'ENDED') {
             res.status(400).send('Ta walka już się zakończyła.');
             return;
@@ -191,6 +196,8 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
             res.status(400).send('Ta walka jeszcze się nie rozpoczęła. Mozesz dolaczyc jako widz dopiero gdy walka sie rozpocznie.');
             return;
         }
+
+
 
     } catch (error) {
         console.log(error);

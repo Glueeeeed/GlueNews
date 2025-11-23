@@ -28,7 +28,7 @@ async function register() {
     const encryptedPassword = await encryptAesGcm(password, sessionSecret);
 
     try {
-        const register = await fetch(`http://localhost:2137/api/auth/register`, {
+        const register = await fetch(`http://localhost:2137/api/auth/register`, { // CHANGE TO YOUR DOMAIN
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -71,7 +71,7 @@ async function getSessionKey() {
     try {
         const clientKeyPair = x25519.keygen();
         const clientPublicKeyHex = clientKeyPair.publicKey.toHex();
-        const keyExchange = await fetch(`http://localhost:2137/api/key-exchange`, {
+        const keyExchange = await fetch(`http://localhost:2137/api/key-exchange`, { // CHANGE TO YOUR DOMAIN
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -86,9 +86,9 @@ async function getSessionKey() {
 
         const keyExchangeData = await keyExchange.json();
         const serverPublicKeyBytes = Uint8Array.fromHex(keyExchangeData.serverPublicKey);
-        console.log(serverPublicKeyBytes);
         return {secret: x25519.getSharedSecret(clientKeyPair.secretKey, serverPublicKeyBytes).toHex().slice(0,32), sessionID: keyExchangeData.sessionID};
     } catch (error) {
+        alert('Wystapil nieoczekiwany błąd. Spróbuj odświeżyć stronę.');
         console.log("Wystapil blad podczas wymiany kluczy: ", error);
     }
 

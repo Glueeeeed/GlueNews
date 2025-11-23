@@ -12,7 +12,7 @@ import db from './configs/database.ts';
 
 
 //Uncomment when httpsMode is enabled
-// import {options} from "./config/ssl";
+// import {options} from "./configs/ssl";
 
 import {corsEnabled, httpsMode, PORT, domain} from "./configs/settings.ts";
 
@@ -76,9 +76,9 @@ function countInRoom(room : string) {
 }
 
 async function voteTimer(sessionID : string) {
-    const voteEndTime = Date.now() + 20_000;
+    const voteEndTime = Date.now() + 30_000;
     VotedIPs.set(sessionID, new Set<string>());
-
+    await db.execute('UPDATE battle_sessions SET status = ? WHERE session', [ 'VOTING', sessionID]);
     await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
     io.to(sessionID).emit('voting');
     const judgeData =  await judgeMessages(sessionID);
