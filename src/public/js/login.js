@@ -93,15 +93,12 @@ async function getSessionKey() {
 
 function showPassword() {
     const passwordInput = document.getElementById('passwordInput');
-    const showIcon = document.getElementById('eye');
-    if (showIcon.classList.contains('text-gray-500')) {
-        passwordInput.type = 'text';
-        showIcon.classList.remove('text-gray-500');
-        showIcon.classList.add('text-gray-900');
-    } else if (showIcon.classList.contains('text-gray-900')) {
-        passwordInput.type = 'password';
-        showIcon.classList.remove('text-gray-900');
-        showIcon.classList.add('text-gray-500');
-    }
+    const eye = document.getElementById('eye');
+    const isPassword = passwordInput.type === 'password';
 
+    passwordInput.type = isPassword ? 'text' : 'password';
+    eye.classList.toggle('fa-eye', !isPassword);
+    eye.classList.toggle('fa-eye-slash', isPassword);
 }
+
+window.showPassword = showPassword;

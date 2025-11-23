@@ -14,11 +14,20 @@ const voteSection = document.getElementById('votingSection');
 const forPlayerInfo = document.getElementById('forPlayersInfo');
 const voteABtn = document.getElementById('voteABtn');
 const voteBBtn = document.getElementById('voteBBtn');
+const copyInviteBtn = document.getElementById('copyInviteBtn');
 
 
 let player;
 let playerRole;
 
+copyInviteBtn.addEventListener('click', () => {
+    const inviteLink = document.getElementById('inviteLink').value;
+    navigator.clipboard.writeText(inviteLink).then(() => {
+        alert('Link do gry skopiowany do schowka!');
+    }).catch(err => {
+        console.error('Nie udało się skopiować linku: ', err);
+    });
+});
 
 sendBtn.addEventListener('click', (e) => {
         socket.emit('message', {msg: input.value, role: playerRole, topic: battleData.sessionData.input});
