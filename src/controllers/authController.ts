@@ -33,8 +33,17 @@ interface loginRequest {
     sessionID: string;
 }
 
+interface loginQuery {
+    redirect: string;
+}
+
 interface registerResponse {
     message: string;
+}
+
+interface loginResponse {
+    message: string;
+    redirect?: string;
 }
 
 interface verifyQuery {
@@ -90,9 +99,10 @@ export const register = async (req: Request<{}, {}, registerRequest>, res: Respo
 
 }
 
-export const login = async (req: Request<{}, {}, loginRequest>, res: Response<registerResponse | { error: string }>): Promise<void>=> {
+export const login = async (req: Request<{}, {}, loginRequest, loginQuery >, res: Response<loginResponse | { error: string }>): Promise<void>=> {
     try {
         const loginEncrypted : string = req.body.login;
+        const redirect : string | undefined = req.query.redirect;
         const passwordEncrypted : string  = req.body.password;
         const sessionID : string = req.body.sessionID;
 
@@ -103,6 +113,7 @@ export const login = async (req: Request<{}, {}, loginRequest>, res: Response<re
             res.status(400).json({ error: 'Invalid input' });
             return;
         }
+
 
         const login : string = decryptData(loginEncrypted, sessionKey);
 
@@ -128,8 +139,13 @@ export const login = async (req: Request<{}, {}, loginRequest>, res: Response<re
 
         console.log('Auth cookie generated successfully.');
 
-        res.status(200).json({message: 'ok'})
+        const safeRedirect = (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//'))
+            ? redirect
+            : undefined;
+
+        res.status(200).json({ message: 'ok', redirect: safeRedirect });
         deleteSecret(sessionID);
+
 
 
 

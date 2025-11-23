@@ -85,7 +85,7 @@ async function voteTimer(sessionID : string) {
     const voteInterval = setInterval(async () => {
         const remaining = Math.floor((voteEndTime - Date.now()) / 1000);
         if (remaining <= 0) {
-            await countVotes(sessionID, judgeData);
+            await countVotes(sessionID, judgeData, countInRoom(sessionID));
             clearInterval(voteInterval);
             console.log('Voting ended for session:', sessionID);
             io.to(sessionID).emit('votingEnded');
@@ -125,7 +125,7 @@ io.on('connection', async (socket) =>  {
             } else {
                 clearTimeout(sessionTimeout);
             }
-        }, 180_000);
+        }, 300_000);
 
     }
     socket.on('ready', async (player) => {
@@ -160,9 +160,14 @@ io.on('connection', async (socket) =>  {
         }
     }
 
+    socket.on('disconnect', () => {
+        console.log(nickname + " opuścił sesję " + sessionID);
+        const count = countInRoom(sessionID);
+        socket.to(sessionID).emit('announcement', nickname + ' opuścił sesję. (' + count + '/2)');
+    })
+
     socket.on('message', async (msg) => {
         await db.execute('INSERT INTO battle_messages (sessionID, user_message, message, nickname, role, topic) VALUES (?, ?, ?, ?, ?, ?)', [sessionID, role, msg.msg, nickname, msg.role, msg.topic]);
-        console.log('Message saved to database');
         socket.to(sessionID).emit('message', {nickname: role + " | " + nickname, message: msg.msg});
     });
 
@@ -201,6 +206,8 @@ io.on('connection', async (socket) =>  {
     });
 
 });
+
+
 
 
 //Uncomment when httpsMode is enabled

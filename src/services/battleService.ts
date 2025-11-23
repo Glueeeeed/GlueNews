@@ -77,7 +77,7 @@ export async function judgeMessages(sessionID: string) {
     }
 }
 
-export async function countVotes(sessionID: string, jugdeData : any) {
+export async function countVotes(sessionID: string, jugdeData : any, memberCount: number) {
     const [voteData] = await db.execute('SELECT * FROM battle_voting WHERE sessionID = ?', [sessionID]);
     const votes = (voteData as any[])[0];
     let winner: string;
@@ -90,14 +90,26 @@ export async function countVotes(sessionID: string, jugdeData : any) {
     let loserScore: number;
     let isDraw: boolean = false;
 
-    if (aVotes > bVotes) {
-        aScore += 100;
-    } else if (bVotes > aVotes) {
-        bScore += 100;
+    if (memberCount > 1) {
+        if (aVotes > bVotes) {
+            aScore += 100;
+        } else if (bVotes > aVotes) {
+            bScore += 100;
+        } else {
+            aScore += 50;
+            bScore += 50;
+        }
     } else {
-        aScore += 50;
-        bScore += 50;
+        if (aVotes > bVotes) {
+            aScore += 50;
+        } else if (bVotes > aVotes) {
+            bScore += 50;
+        } else {
+            aScore += 25;
+            bScore += 25;
+        }
     }
+
 
     if (aScore > bScore) {
         winner = 'A';
@@ -118,7 +130,6 @@ export async function countVotes(sessionID: string, jugdeData : any) {
         isDraw = true;
 
     }
-    console.log('Battle result:', {winner, winnerScore, loser, loserScore, isDraw});
     await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw) VALUES (?, ?, ?, ?, ?, ?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw]);
     await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['ENDED', sessionID]);
 

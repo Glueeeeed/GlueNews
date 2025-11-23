@@ -175,16 +175,14 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
         }
 
 
-
-
         if (data.B_uuid === null && isLoggedIn) {
             await db.execute('UPDATE battle_sessions SET B_uuid = ? WHERE sessionID = ?', [userID, sessionID]);
             res.status(200);
             res.redirect(`http://localhost:2137/api/battle/rooms/${sessionID}/?user=${userID}`);
             return;
         } else if (data.B_uuid === null && !isLoggedIn) {
-            res.status(400).send('Autoryzacja wymagana. Musisz sie zalogowac aby dołaczyc do walki!');
-            return;
+            const targetPath = `/api/battle/rooms/${sessionID}`
+            res.redirect(302, `/login?redirect=${encodeURIComponent(targetPath)}`);
         }
 
 

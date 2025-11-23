@@ -17,39 +17,43 @@ async function login() {
     const email = document.getElementById('emailInput').value;
     const password = document.getElementById('passwordInput').value;
     const sessionKey = await getSessionKey();
-    const sessionID = sessionKey.sessionID
-    const sessionSecret = sessionKey.secret
+    const sessionID = sessionKey.sessionID;
+    const sessionSecret = sessionKey.secret;
+
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
 
     const encryptedEmail = await encryptAesGcm(email, sessionSecret);
     const encryptedPassword = await encryptAesGcm(password, sessionSecret);
 
     try {
-        const login = await fetch(`http://localhost:2137/api/auth/login`, { // CHANGE TO YOUR DOMAIN
+        const url = `http://localhost:2137/api/auth/login` + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : '');
+        const login = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 login: encryptedEmail,
                 password: encryptedPassword,
                 sessionID: sessionID
-
             })
         });
+
         if (!login.ok) {
             const errorData = await login.json();
             throw new Error(errorData.error);
         }
+
         const loginData = await login.json();
-        console.log("Logowanie powiodlo sie: ", loginData.message);
-        window.location.href = '/';
-
-
+        if (loginData.redirect) {
+            window.location.href = loginData.redirect;
+        } else {
+            window.location.href = '/';
+        }
     } catch (error) {
         console.log('Logowanie nie powiodlo sie: ', error.message);
         alert(error.message);
     }
-
 }
 
 async function encryptAesGcm(plainText, keyHex) {
