@@ -9,6 +9,11 @@ Najlepsze miejsce do sprawdzania wiarygodności informacji i ćwiczenia umiejęt
 
 GlueNews to narzędzie stworzone jako odpowiedź na co raz wiekszą ilość fałszywych informacji w Internecie. Celem projektu było stworzenie narzędzia które pomoże rozróżnić fałszywe informacje od tych prawdziwych wykorzystując do tego sztuczną inteligencje która staje się naszą przyszłością.
 
+## WERSJA DEMONSTRACYJNA
+Aplikacja jest dostępna pod adresem:
+- [GlueNews - demo](https://glueeed.dev:6767)
+W przypadku problemów z dostępem do demo prosimy o kontakt poprzez Issues w repozytorium GitHub.
+Wersja demo może być okresowo resetowana, a dane użytkowników mogą być usuwane.
 
 ## Funkcje aplikacji
 
