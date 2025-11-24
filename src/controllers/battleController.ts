@@ -181,7 +181,7 @@ export const initializeBattleRoom = async (req: Request<battleRoomParams, {}, {}
             res.redirect(`http://localhost:2137/api/battle/rooms/${sessionID}/?user=${userID}`);
             return;
         } else if (data.B_uuid === null && !isLoggedIn) {
-            const targetPath = `/api/battle/rooms/${sessionID}`
+            const targetPath = `/api/battle/${sessionID}`;
             res.redirect(302, `/login?redirect=${encodeURIComponent(targetPath)}`);
             return;
         }
