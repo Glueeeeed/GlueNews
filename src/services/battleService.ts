@@ -135,28 +135,20 @@ export async function countVotes(sessionID: string, jugdeData : any, memberCount
     const userUUIDs = (userUUIDsData as any[])[0];
     let winnerUUID: string;
     let loserUUID: string;
-    let winnerReasons: string;
-    let loserReasons: string;
     if (winner === 'A') {
         winnerUUID = userUUIDs.A_uuid;
         loserUUID = userUUIDs.B_uuid;
-        winnerReasons = jugdeData.A_ocena;
-        loserReasons = jugdeData.B_ocena;
     } else if (winner === 'B') {
         winnerUUID = userUUIDs.B_uuid;
         loserUUID = userUUIDs.A_uuid;
-        winnerReasons = jugdeData.B_ocena;
-        loserReasons = jugdeData.A_ocena;
     } else {
         winnerUUID = userUUIDs.A_uuid;
         loserUUID = userUUIDs.B_uuid;
-        winnerReasons = jugdeData.A_ocena;
-        loserReasons = jugdeData.B_ocena;
     }
 
     await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [winnerScore, winnerUUID]);
     await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [loserScore, loserUUID]);
-    await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw, winner_reasons, loser_reasons) VALUES (?, ?, ?, ?, ?, ?, ?,?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw, winnerReasons, loserReasons]);
+    await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw) VALUES (?, ?, ?, ?, ?, ?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw]);
     await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['ENDED', sessionID]);
 
 
