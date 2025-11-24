@@ -20,6 +20,7 @@ import {deleteSecret} from "../services/keyExchangeService.ts";
 dotenv.config({ path: './src/configs/secrets.env' });
 const secret : any = process.env.jwtSecret;
 
+
 interface registerRequest {
     login: string;
     password: string;

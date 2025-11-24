@@ -66,8 +66,8 @@ export async function judgeMessages(sessionID: string) {
                 '}\n',
 
         });
-         console.log(response.text);
-         return extractJsonFromMarkdown(response.text);
+        console.log(response.text);
+        return extractJsonFromMarkdown(response.text);
 
     } catch (error: any) {
         if (error.status === 503 && error.message.includes('overloaded')) {
@@ -76,6 +76,7 @@ export async function judgeMessages(sessionID: string) {
         console.log(error);
     }
 }
+
 
 export async function countVotes(sessionID: string, jugdeData : any, memberCount: number) {
     const [voteData] = await db.execute('SELECT * FROM battle_voting WHERE sessionID = ?', [sessionID]);
@@ -92,21 +93,21 @@ export async function countVotes(sessionID: string, jugdeData : any, memberCount
 
     if (memberCount > 1) {
         if (aVotes > bVotes) {
-            aScore += 100;
-        } else if (bVotes > aVotes) {
-            bScore += 100;
-        } else {
-            aScore += 50;
-            bScore += 50;
-        }
-    } else {
-        if (aVotes > bVotes) {
             aScore += 50;
         } else if (bVotes > aVotes) {
             bScore += 50;
         } else {
             aScore += 25;
             bScore += 25;
+        }
+    } else {
+        if (aVotes > bVotes) {
+            aScore += 25;
+        } else if (bVotes > aVotes) {
+            bScore += 25;
+        } else {
+            aScore += 15;
+            bScore += 15;
         }
     }
 
@@ -134,20 +135,28 @@ export async function countVotes(sessionID: string, jugdeData : any, memberCount
     const userUUIDs = (userUUIDsData as any[])[0];
     let winnerUUID: string;
     let loserUUID: string;
+    let winnerReasons: string;
+    let loserReasons: string;
     if (winner === 'A') {
         winnerUUID = userUUIDs.A_uuid;
         loserUUID = userUUIDs.B_uuid;
+        winnerReasons = jugdeData.A_ocena;
+        loserReasons = jugdeData.B_ocena;
     } else if (winner === 'B') {
         winnerUUID = userUUIDs.B_uuid;
         loserUUID = userUUIDs.A_uuid;
+        winnerReasons = jugdeData.B_ocena;
+        loserReasons = jugdeData.A_ocena;
     } else {
         winnerUUID = userUUIDs.A_uuid;
         loserUUID = userUUIDs.B_uuid;
+        winnerReasons = jugdeData.A_ocena;
+        loserReasons = jugdeData.B_ocena;
     }
 
     await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [winnerScore, winnerUUID]);
     await db.execute('UPDATE leaderboard SET score = score + ? WHERE uuid = ? ', [loserScore, loserUUID]);
-    await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw) VALUES (?, ?, ?, ?, ?, ?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw]);
+    await db.execute('INSERT INTO battle_result (winner, sessionID, score, loser, loser_score, isDraw, winner_reasons, loser_reasons) VALUES (?, ?, ?, ?, ?, ?, ?,?)', [winner, sessionID, winnerScore, loser, loserScore, isDraw, winnerReasons, loserReasons]);
     await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['ENDED', sessionID]);
 
 

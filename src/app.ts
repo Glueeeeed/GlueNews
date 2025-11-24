@@ -77,7 +77,7 @@ function countInRoom(room : string) {
 }
 
 async function voteTimer(sessionID : string) {
-    const voteEndTime = Date.now() + 30_000;
+    const voteEndTime = Date.now() + 20_000;
     VotedIPs.set(sessionID, new Set<string>());
     await db.execute('UPDATE battle_sessions SET status = ? WHERE sessionID = ?', ['VOTING', sessionID]);
     await db.execute('INSERT INTO battle_voting (sessionID, A_votings, B_votings) VALUES (?, ?, ?)', [sessionID, 0, 0]);
@@ -137,7 +137,7 @@ io.on('connection', async (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 40_000;
+            const endBattleTimer = Date.now() + 180_000;
             io.to(sessionID).emit('startBattle', role)
             usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {
@@ -176,7 +176,7 @@ io.on('connection', async (socket) =>  {
         try {
             const ip = getClientIP(socket);
             if (!ip) {
-                socket.emit('voteRejected', { reason: 'Brak adresu IP' });
+                console.log('Ip not found')
                 return;
             }
             let set = VotedIPs.get(sessionID);
@@ -185,7 +185,7 @@ io.on('connection', async (socket) =>  {
                 VotedIPs.set(sessionID, set);
             }
             if (set.has(ip)) {
-                socket.emit('voteRejected', { reason: 'Głos z tego adresu IP został już oddany' });
+                console.log('A vote has already been cast from this IP address.')
                 return;
             }
 
