@@ -91,7 +91,7 @@ export async function countVotes(sessionID: string, jugdeData : any, memberCount
     let loserScore: number;
     let isDraw: boolean = false;
 
-    if (memberCount > 1) {
+    if (memberCount > 3) {
         if (aVotes > bVotes) {
             aScore += 50;
         } else if (bVotes > aVotes) {

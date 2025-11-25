@@ -10,6 +10,8 @@
 
 import {Request, Response} from "express";
 import {generateSession, getAnalysisResult, getDataResults} from '../services/analyseService.ts';
+import validator from 'validator';
+import {BadRequestError} from "../utils/error.ts";
 
 interface InputData {
     input: string;
@@ -34,23 +36,25 @@ interface outputResultData {
         if (!auth?.isAuthenticated) {
             console.log(auth?.isAuthenticated)
             console.log(auth?.reason);
-             return res.status(400).json({ error: "Autoryzacja wymagana" });
+            throw new BadRequestError('Autoryzacja jest wymagana');
         }
         const input = req.body.input;
-        if (!input) {
-            res.status(400).json({ error: 'Invalid input' });
-            return;
+        if (validator.isEmpty(input)) {
+            throw new BadRequestError('Nie można przetwarzać pustych danych');
         }
 
-        console.log(input);
+
 
         const result : object =  await getAnalysisResult(input, process.env.GEMINI_API_KEY, 'gemini-2.5-flash');
         const id : string = await generateSession(result, input);
         console.log('Analysis session created with ID:', id);
         res.status(200).json({result: id});
 
-
     } catch (error: any) {
+        if (error instanceof BadRequestError) {
+            res.status(400).json({ error: error.message });
+            return;
+        }
         if (error.status === 503 && error.message.includes('overloaded')) {
             console.log('Gemini API is overloaded. Trying another model...');
             try {

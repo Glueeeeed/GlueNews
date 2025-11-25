@@ -41,6 +41,7 @@ Wersja demo może być okresowo resetowana, a dane użytkowników mogą być usu
 - Node.js ≥ 20
 - MySQL 8.0+
 - Klucz API do Gemini
+- server SMTP do wysyłki maili (np. Gmail, SendGrid)
 
 ## Instalacja i uruchomienie
 

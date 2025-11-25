@@ -11,6 +11,8 @@
 import {Response, Request} from 'express';
 import db from '../configs/database.ts';
 import crypto from 'crypto';
+import validator from 'validator';
+import {BadRequestError} from "../utils/error.js";
 
 interface getSessionRequest {
     data: string;
@@ -38,6 +40,9 @@ export const createBattleSession = async (req: Request<{}, {}, getSessionRequest
             res.status(400).json({ error: "Autoryzacja wymagana" });
             return;
         }
+        if (validator.isEmpty(input)) {
+            throw new BadRequestError('Temat do walki nie moze byc pusty');
+        }
 
         const userID : any = auth?.userId;
         const sessionID : string = crypto.randomBytes(6).toString('base64url');
@@ -45,6 +50,10 @@ export const createBattleSession = async (req: Request<{}, {}, getSessionRequest
         await db.execute('INSERT INTO battle_sessions (sessionID, input, A_uuid, B_uuid, status) VALUES (?,?,?,?, ?)', [sessionID, input, userID, null, 'NOT YET STARTED']);
         res.status(200).json({ sessionBattleID: sessionID, uuid: userID });
     } catch (error) {
+        if (error instanceof BadRequestError) {
+            res.status(400).json({ error: error.message });
+            return;
+        }
         console.log(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }

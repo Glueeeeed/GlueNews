@@ -46,6 +46,8 @@ export const io = new Server(server, {
         } : undefined,
 })
 
+let isEnd: boolean = false;
+
 // Extract best-effort client IP address for a Socket.IO connection
 function getClientIP(socket: Socket): string {
     const xff = socket.handshake.headers['x-forwarded-for'];
@@ -89,6 +91,7 @@ async function voteTimer(sessionID : string) {
             await countVotes(sessionID, judgeData, countInRoom(sessionID));
             clearInterval(voteInterval);
             console.log('Voting ended for session:', sessionID);
+            isEnd = true;
             io.to(sessionID).emit('votingEnded');
         }
     }, 1000);
@@ -120,10 +123,14 @@ io.on('connection', async (socket) =>  {
 
     } else if (count  <= 1) {
         const sessionTimeout = setTimeout(async () => {
-            if (countInRoom(sessionID) < 2) {
+            if (countInRoom(sessionID) < 2 && isEnd === false) {
                 await timeoutBattle(sessionID);
                 socket.disconnect();
-            } else {
+            } else if (countInRoom(sessionID) >= 2) {
+                console.log('Both players connected, clearing timeout for session:', sessionID);
+                clearTimeout(sessionTimeout);
+            } else if (isEnd === true) {
+                console.log('Battle already ended, no timeout needed for session:', sessionID);
                 clearTimeout(sessionTimeout);
             }
         }, 300_000);
@@ -137,7 +144,7 @@ io.on('connection', async (socket) =>  {
         }
         if (usersReady.a && usersReady.b) {
             const role = await startBattle(sessionID);
-            const endBattleTimer = Date.now() + 180_000;
+            const endBattleTimer = Date.now() + 300_000;
             io.to(sessionID).emit('startBattle', role)
             usersReady = {a: false, b: false};
             const fightTimer = setInterval(() => {

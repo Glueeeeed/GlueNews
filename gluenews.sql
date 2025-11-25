@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 24, 2025 at 10:12 PM
+-- Generation Time: Nov 25, 2025 at 03:47 PM
 -- Server version: 8.0.44-0ubuntu0.24.04.1
 -- PHP Version: 8.3.28
 
@@ -29,12 +29,13 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `battle_messages` (
   `id` int NOT NULL,
-  `sessionID` varchar(22) NOT NULL,
-  `user_message` enum('A','B') NOT NULL,
+  `sessionID` varchar(22) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_message` enum('A','B') COLLATE utf8mb4_unicode_ci NOT NULL,
   `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('OBRONCA','OBALATOR') NOT NULL,
+  `nickname` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('OBRONCA','OBALATOR') COLLATE utf8mb4_unicode_ci NOT NULL,
   `topic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -44,13 +45,13 @@ CREATE TABLE `battle_messages` (
 
 CREATE TABLE `battle_result` (
   `id` int NOT NULL,
-  `winner` varchar(50) NOT NULL,
-  `sessionID` varchar(22) NOT NULL,
+  `winner` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sessionID` varchar(22) COLLATE utf8mb4_unicode_ci NOT NULL,
   `score` int NOT NULL,
-  `loser` varchar(50) NOT NULL,
+  `loser` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `loser_score` int NOT NULL,
   `isDraw` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -60,14 +61,14 @@ CREATE TABLE `battle_result` (
 
 CREATE TABLE `battle_sessions` (
   `id` int NOT NULL,
-  `sessionID` varchar(22) NOT NULL,
+  `sessionID` varchar(22) COLLATE utf8mb4_unicode_ci NOT NULL,
   `input` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `A_uuid` varchar(36) NOT NULL,
-  `B_uuid` varchar(36) DEFAULT NULL,
-  `status` enum('NOT YET STARTED','IN PROGRESS','ENDED','VOTING') NOT NULL,
-  `A_role` enum('OBRONCA','OBALATOR') DEFAULT NULL,
-  `B_role` enum('OBRONCA','OBALATOR') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `A_uuid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `B_uuid` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('NOT YET STARTED','IN PROGRESS','ENDED','VOTING') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `A_role` enum('OBRONCA','OBALATOR') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `B_role` enum('OBRONCA','OBALATOR') COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -77,10 +78,10 @@ CREATE TABLE `battle_sessions` (
 
 CREATE TABLE `battle_voting` (
   `id` int NOT NULL,
-  `sessionID` varchar(22) NOT NULL,
+  `sessionID` varchar(22) COLLATE utf8mb4_unicode_ci NOT NULL,
   `A_votings` int NOT NULL,
   `B_votings` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -90,10 +91,10 @@ CREATE TABLE `battle_voting` (
 
 CREATE TABLE `leaderboard` (
   `id` int NOT NULL,
-  `uuid` varchar(36) NOT NULL,
+  `uuid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `score` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -103,13 +104,13 @@ CREATE TABLE `leaderboard` (
 
 CREATE TABLE `sessions` (
   `id` int NOT NULL,
-  `sessionID` varchar(22) NOT NULL,
+  `sessionID` varchar(22) COLLATE utf8mb4_unicode_ci NOT NULL,
   `truthScore` int NOT NULL,
   `verdict` int NOT NULL,
   `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sources` text NOT NULL,
+  `sources` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `input` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -119,12 +120,12 @@ CREATE TABLE `sessions` (
 
 CREATE TABLE `users` (
   `id` int NOT NULL,
-  `uuid` varchar(36) NOT NULL,
-  `username` varchar(50) NOT NULL,
+  `uuid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` text NOT NULL,
+  `password` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `verified` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables

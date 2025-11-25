@@ -46,6 +46,8 @@ export async function getAnalysisResult(input: string, key: any , model: string)
             '}',
     });
 
+
+
     return extractJsonFromMarkdown(response.text);
 
 }
